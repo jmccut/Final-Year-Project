@@ -3,30 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AlienController : MonoBehaviour {
-    private Transform playerTransform; //reference to the player transform to chase
+    private Transform playerTransform; //reference to the player transform
     public float speed; //sets the speed of the alien
     public int damage; //sets the damage the alien does on contact with the ship
-	// Use this for initialization
-	void Start () {
+    public GameObject explosion;
+
+    void Start () {
         //gets player position
         try
         {
             playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         }
-#pragma warning disable CS0168 // Variable is declared but never used
+        #pragma warning disable CS0168 
         catch (System.NullReferenceException e)
         {
-        #pragma warning restore CS0168 // Variable is declared but never used
+        #pragma warning restore CS0168 
         }
     }
 
     void FixedUpdate()
-    {
+    { //moves enemy towards the player transform if ship is not already dead
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        //moves enemy towards the player transform if ship is not already dead
         if (playerTransform != null)
         {
             rb.transform.position = Vector3.MoveTowards(rb.position, playerTransform.transform.position, Time.deltaTime * speed);
         }
+    }
+
+    private void OnDestroy()
+    { //when the player is destroyed, instantiate an explosion
+        Instantiate(explosion, transform.position, transform.rotation);   
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
@@ -10,12 +11,16 @@ public class PlayerController : MonoBehaviour {
     public Transform shotSpawn; //where the bullet will spawn
     public float firerate; //how fast to shoot
     public GameObject shot; //reference to the bullet object
-    private SpriteRenderer spriteRenderer;
+    private SpriteRenderer spriteRenderer; //reference to the ship sprite
+    public Button restart; //reference to the restart button
+    private Rigidbody2D rb;
 
     private void Start()
     {
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        health = 500; //sets the starting health
+        //sets the starting health of the player
+        health = 500;
+        rb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -30,31 +35,12 @@ public class PlayerController : MonoBehaviour {
 
     void FixedUpdate () {
         //if the game is running them perform movement
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (GameController.IsRunning)
         {
+            //scales the ship down slighly when game starts
             if (transform.localScale.y > 18f){
                 transform.localScale -= new Vector3(0.4f, 0.5f, 0f);
             }
-            /* HACK: This needs to be used when game goes mobile
-            if (Input.touchCount > 0)
-            {
-                //finger on screen
-                if (Input.GetTouch(0).phase == TouchPhase.Began)
-                {
-                    rb.AddForce(Vector3.up * 1, ForceMode2D.Force);
-                }
-                if (Input.GetTouch(0).phase == TouchPhase.Moved)
-                {
-                    Debug.Log("touch moved");
-                }
-                if (Input.GetTouch(0).phase == TouchPhase.Ended)
-                {
-                    Debug.Log("touch Ended");
-                }
-
-            }
-            */
 
             if (Input.GetKey(KeyCode.Space))
             {
@@ -76,50 +62,52 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    private void OnDestroy()
-    {
-        //will need this eventually to say the player is dead
-        
-    }
-
     public void DecrementHealth(int damage)
-    {
+    { //decrease health by amount specified
         health -= damage;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
-    {
-        //if the wall collides with the player, kill it
+    { //if the wall collides with the player, kill player
         if (collision.gameObject.CompareTag("Wall") && GameController.IsRunning)
         {
-            Destroy(gameObject);
+            Dead();
+
         }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
-    {
-        //if an enemy collides with the player, do damage while it touches the ship
+    { //if an enemy collides with the player, do damage while it touches the ship
         if (collision.gameObject.CompareTag("Alien1") && GameController.IsRunning)
         {
+            //change the sprite colour to red to show visual feedback
             spriteRenderer.color = Color.red;
+
             //decrements the ship health by the amount of damage the alien does
             DecrementHealth(collision.gameObject.GetComponent<AlienController>().damage);
+
             //kills the ship if the amount of damage was enough to kill it
             if (health <= 0)
             {
-                Destroy(gameObject);
+                Dead();
             }
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
-    {
+    { //sets the colour of the ship back to white once the collider is empty
         spriteRenderer.color = Color.white;
     }
     
     void Shoot()
-    {
+    { //makes shot
         Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
+    }
+
+    public void Dead()
+    { //when the ship dies, stop rendering it and show the restart button
+        gameObject.GetComponent<Renderer>().enabled = false;
+        restart.gameObject.SetActive(true);
     }
 }
 
