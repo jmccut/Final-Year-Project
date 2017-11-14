@@ -8,7 +8,7 @@ public class LevelTextController : MonoBehaviour, IPointerClickHandler
 {
     //holds the valid positions the text can be in
     //In order of: EARTH, MOON, MARS, JUPITER, SATURN, URANUS, NEPTUNE, PLUTO, VENUS
-    private float[] validPositions = {26.6f,15.3f,-1.6f,-22f,-48.73f,-73.4f,-944.1f,-112.6f,44.44f};
+    private float[] validPositions = {27.6f, 16.7f,-0.6f,-21f,-47.73f,-72.4f,-93.1f,-111.6f,45.44f};
     private float currentPos;
 
     public Text thisText; //holds reference to this text object to make adjustments
@@ -16,7 +16,7 @@ public class LevelTextController : MonoBehaviour, IPointerClickHandler
 
     void Update () {
         //sets the position of the text to the correct planet based on the stage
-        currentPos = validPositions[GameController.Stage - 1];
+        currentPos = validPositions[GameController.Stage-1];
         transform.position = new Vector3(currentPos, 42.5f, 0f);
 
         //changes the colour of the text based on the stage

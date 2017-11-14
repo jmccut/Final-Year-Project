@@ -5,7 +5,8 @@ using UnityEngine;
 public class BGScroller : MonoBehaviour {
 
     //holds the amount the background moves (larger increments move faster)
-    public float scrollSpeed;
+    private float scroll;
+    public static float scrollSpeed; //0.0004 slow 0.00175 fast
 
     void Update()
     {
@@ -13,18 +14,20 @@ public class BGScroller : MonoBehaviour {
         if (!(GameController.IsRunning))
         {
             //if we're not approaching a planet (don't want the background to move whilst at a planet)
-            if (!PlanetController.atPlanet) { 
-                scrollSpeed += 0.0004f;
+            if (!PlanetController.atPlanet) {
+                scrollSpeed = 40f;
             }
         }
         //if we are in a game
         else if(GameController.IsRunning)
         {
-            scrollSpeed += 0.00175f;
+            //225
+            scrollSpeed = 175f + (GameController.Level - 1) * 50;
         }
 
         //changes the position of the background
-        Vector2 offset = new Vector2(0, scrollSpeed);
+        scroll += scrollSpeed / 100000;
+        Vector2 offset = new Vector2(0, scroll);
         Renderer renderer = GetComponent<Renderer>();
         renderer.material.SetTextureOffset("_MainTex", offset);
     }

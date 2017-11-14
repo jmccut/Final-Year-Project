@@ -108,6 +108,7 @@ public class PlayerController : MonoBehaviour {
     { //when the ship dies, stop rendering it and show the restart button
         gameObject.GetComponent<Renderer>().enabled = false;
         restart.gameObject.SetActive(true);
+        GameController.IsRunning = false;
     }
 }
 

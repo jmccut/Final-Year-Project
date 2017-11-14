@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletController : MonoBehaviour {
-
+    public GameObject explosion;
     public float speed; //holds speed of the bullets
 
     private void Start()
@@ -33,6 +33,7 @@ public class BulletController : MonoBehaviour {
         {
             Destroy(collision.gameObject);
             Destroy(gameObject);
+            Instantiate(explosion, transform.position, transform.rotation);
             GameController.numAliensToKill--; //decrements the number of aliens left to kill
         }
     }

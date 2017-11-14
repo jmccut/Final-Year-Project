@@ -24,14 +24,9 @@ public class AlienController : MonoBehaviour {
     void FixedUpdate()
     { //moves enemy towards the player transform if ship is not already dead
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (playerTransform != null)
+        if (playerTransform !=  null && GameController.IsRunning)
         {
             rb.transform.position = Vector3.MoveTowards(rb.position, playerTransform.transform.position, Time.deltaTime * speed);
         }
-    }
-
-    private void OnDestroy()
-    { //when the player is destroyed, instantiate an explosion
-        Instantiate(explosion, transform.position, transform.rotation);   
     }
 }
