@@ -29,7 +29,7 @@ public class GameController : MonoBehaviour {
         IsRunning = false;
         Level = 1;
         Stage = 1;
-        numAliensToKill = Level *5; //sets the number of aliens to kill to level up
+        numAliensToKill = Level * 5; //sets the number of aliens to kill to level up
         previousHeight = -100; //arbitrary number so that the function knows it has not been initialised
         WallController.speed = 17; //sets starting speed for walls
         wallSpawnSpeed = 0.35f;

@@ -47,3 +47,9 @@ TagManager:
   - name: Map Ship
     uniqueID: 3197889413
     locked: 0
+  - name: UIButtons
+    uniqueID: 3575770387
+    locked: 0
+  - name: SettingsImage
+    uniqueID: 1520506055
+    locked: 0
