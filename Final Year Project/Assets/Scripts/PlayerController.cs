@@ -9,11 +9,14 @@ public class PlayerController : MonoBehaviour {
     public float speed; //speed of the ship movement
     public static float health; //ship health
     public Transform shotSpawn; //where the bullet will spawn
-    public float firerate; //how fast to shoot
     public GameObject shot; //reference to the bullet object
     private SpriteRenderer spriteRenderer; //reference to the ship sprite
     public Button restart; //reference to the restart button
     private Rigidbody2D rb;
+    public MoveZoneScript MZ;
+    public FireZoneScript FZ;
+    private float nextFire;
+    public float fireRate;
 
     private void Start()
     {
@@ -25,10 +28,10 @@ public class PlayerController : MonoBehaviour {
 
     private void Update()
     {
-        //HACK: This needs to be changed when switching to mobile
-        //shoots when the left mouse button is clicked and the game is running
-        if (Input.GetMouseButtonDown(0) && GameController.IsRunning)
+        //shoots when the game is running and the fire area is being touched
+        if (GameController.IsRunning && FZ.canFire && Time.time > nextFire)
         {
+            nextFire = Time.time + fireRate;
             Shoot();
         }
     }
@@ -41,8 +44,8 @@ public class PlayerController : MonoBehaviour {
             if (transform.localScale.y > 18f){
                 transform.localScale -= new Vector3(0.4f, 0.5f, 0f);
             }
-
-            if (Input.GetKey(KeyCode.Space))
+            //if the player is touching the movement area
+            if (MZ.canMove)
             {
                 //move ship up at the full movement speed
                 rb.velocity = Vector3.up * speed;

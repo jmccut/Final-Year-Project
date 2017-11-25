@@ -7,6 +7,8 @@ TagManager:
   - Wall
   - Alien1
   - Health
+  - SettingsImage
+  - Zone
   layers:
   - Default
   - TransparentFX

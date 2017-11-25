@@ -8,7 +8,9 @@ public class LevelTextController : MonoBehaviour, IPointerClickHandler
 {
     //holds the valid positions the text can be in
     //In order of: EARTH, MOON, MARS, JUPITER, SATURN, URANUS, NEPTUNE, PLUTO, VENUS
-    private float[] validPositions = {27.6f, 16.7f,-0.6f,-21f,-47.73f,-72.4f,-93.1f,-111.6f,45.44f};
+    //private float[] validPositions = {27.6f, 16.7f,-0.6f,-21f,-47.73f,-72.4f,-93.1f,-111.6f,45.44f};
+    //private float[] validPositions = {25.6f, 15.2f, -1.1f, -20.1f, -45.23f, -68.2f, -88.1f, -105.2f, 42.32f };
+    private float[] validPositions = {30f, 19.4f, 2.6f, -17.1f, -42.68f, -65.9f, -86.2f, -103.6f, 47f};
     private float currentPos;
 
     public Text thisText; //holds reference to this text object to make adjustments

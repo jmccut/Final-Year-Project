@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour {
     private int level; //used to indicate what level of the game the ship is on
     public GUIController GUI; //used to enable the GUI again after the level has ended
     public Text healthText; //used to set the health text
+    public Text levelText; //used to display the current level
     public PlanetController planet; //used to instantiate planet at the end of a level
     public static int numAliensToKill;//holds the number of aliens to kill per level
     public static bool stageCleared; //flag for when a number of stages are cleared
@@ -54,6 +55,7 @@ public class GameController : MonoBehaviour {
 
         //sets the text for the health HUD
         healthText.text = "Health: "+ PlayerController.health;
+        levelText.text = "Level: " + Level + "/5";
     }
 
     void LevelUp()
@@ -87,7 +89,7 @@ public class GameController : MonoBehaviour {
     { //spawn enemy at the beginning of the map in a random range along the y
         if (GameController.IsRunning)
         {
-            Instantiate(alien, new Vector3(-120f, Random.Range(-30, 30), 0), Quaternion.identity);
+            Instantiate(alien, new Vector3(-125f, Random.Range(-30, 30), 0), Quaternion.identity);
         }
     }
 
@@ -96,7 +98,7 @@ public class GameController : MonoBehaviour {
         Vector3 randVect = new Vector3(0f, Random.Range(0f, wallHeightRange), 0f);
         if (wallCopy.transform.localScale.y < 95f)
         {
-            GameObject middleWall = Instantiate(wall, new Vector3(-120f, Random.Range(-26f, 26), wall.transform.position.z), Quaternion.identity);
+            GameObject middleWall = Instantiate(wall, new Vector3(-125f, Random.Range(-26f, 26), wall.transform.position.z), Quaternion.identity);
             middleWall.transform.localScale += randVect;
         }
         
@@ -129,8 +131,8 @@ public class GameController : MonoBehaviour {
         }
 
         //instantiate wall objects at location off the screen
-        wallCopy = Instantiate(wall, new Vector3(-120, -46.3f, wall.transform.position.z), Quaternion.identity);
-        TopWallCopy = Instantiate(TopWall, new Vector3(-120, 46.3f, wall.transform.position.z), Quaternion.identity);
+        wallCopy = Instantiate(wall, new Vector3(-125, -46.3f, wall.transform.position.z), Quaternion.identity);
+        TopWallCopy = Instantiate(TopWall, new Vector3(-125, 46.3f, wall.transform.position.z), Quaternion.identity);
 
         //if applying the scaling would result in a wall of negative height, give it a new height in the range 1-10
         if ((wallCopy.transform.localScale + heightVect).y < 0)
@@ -169,7 +171,7 @@ public class GameController : MonoBehaviour {
         {
             Destroy(g.gameObject);
         }
-
+        PlayerController.health = 500; //resets player health
         StartCoroutine(GUI.EnableCanvas());
     }
 
@@ -183,6 +185,7 @@ public class GameController : MonoBehaviour {
         }
 
         numAliensToKill = Level * 5;
+        
         player.GetComponent<Renderer>().enabled = true;
         player.transform.position = Vector3.MoveTowards(player.transform.position, new Vector3(0.0f, 0.0f, 0.0f), 50 * Time.deltaTime);
     }

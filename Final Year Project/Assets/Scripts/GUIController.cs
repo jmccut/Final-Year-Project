@@ -8,7 +8,7 @@ public class GUIController : MonoBehaviour {
     { //disables each child of the GUI except health which is needed during the game
         foreach (Transform child in transform)
         {
-            if (!child.CompareTag("Health"))
+            if (!child.CompareTag("Health") && !child.CompareTag("Zone"))
             {
                 child.gameObject.SetActive(false);
             }
