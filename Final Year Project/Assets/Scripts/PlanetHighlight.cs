@@ -5,10 +5,6 @@ using UnityEngine.UI;
 
 public class PlanetHighlight : MonoBehaviour {
     public Image[] planetList;
-	// Use this for initialization
-	void Start () {
-		
-	}
 	
 	// Update is called once per frame
 	void Update () {

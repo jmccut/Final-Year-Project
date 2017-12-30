@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SettingsController : MonoBehaviour {
-    //public Button[] mainMenuList; //holds list of buttons to spawn for main menu
     private bool lastTouched; //holds the flag so the menu button either creates or destroys buttons
 
     void Start () {

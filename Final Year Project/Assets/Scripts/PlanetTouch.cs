@@ -17,7 +17,7 @@ public class PlanetTouch : MonoBehaviour, IPointerClickHandler
 	void Update () {
         if (selected)
         {
-            GetComponent<Image>().color = Color.green;
+            GetComponent<Image>().color = Color.Lerp(Color.white, Color.green, Mathf.PingPong(Time.time, 1));
         }
         else
         {

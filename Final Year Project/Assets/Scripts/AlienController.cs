@@ -29,4 +29,17 @@ public class AlienController : MonoBehaviour {
             rb.transform.position = Vector3.MoveTowards(rb.position, playerTransform.transform.position, Time.deltaTime * speed);
         }
     }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        //makes sure the aliens do not collide with walls
+        if (collision.CompareTag("Bullet"))
+        {
+            //if the bullet hits an alien, kill both alien and bullet
+            Destroy(collision.gameObject);
+            Destroy(gameObject);
+            Instantiate(explosion, transform.position, transform.rotation);
+            GameController.numAliensToKill--; //decrements the number of aliens left to kill
+        }
+
+    }
 }

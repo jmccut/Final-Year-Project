@@ -25,16 +25,4 @@ public class BulletController : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        //if the bullet hits an alien, kill both alien and bullet
-        if (collision.gameObject.CompareTag("Alien1"))
-        {
-            Destroy(collision.gameObject);
-            Destroy(gameObject);
-            Instantiate(explosion, transform.position, transform.rotation);
-            GameController.numAliensToKill--; //decrements the number of aliens left to kill
-        }
-    }
 }

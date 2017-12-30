@@ -9,6 +9,7 @@ TagManager:
   - Health
   - SettingsImage
   - Zone
+  - Bullet
   layers:
   - Default
   - TransparentFX

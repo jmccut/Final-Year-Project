@@ -15,7 +15,6 @@ public class GameController : MonoBehaviour {
     public GUIController GUI; //used to enable the GUI again after the level has ended
     public Text healthText; //used to set the health text
     public Text levelText; //used to display the current level
-    public PlanetController planet; //used to instantiate planet at the end of a level
     public static int numAliensToKill;//holds the number of aliens to kill per level
     public static bool stageCleared; //flag for when a number of stages are cleared
     private int stage; //holds which stage the game is on
@@ -82,12 +81,12 @@ public class GameController : MonoBehaviour {
         wallSpawnSpeed -= 0.05f;
 
         //set the number of aliens to kill for the current level
-        numAliensToKill = Level *5;
+        numAliensToKill = Level * 5;
     }
 
     void makeEnemy()
     { //spawn enemy at the beginning of the map in a random range along the y
-        if (GameController.IsRunning)
+        if (IsRunning)
         {
             Instantiate(alien, new Vector3(-125f, Random.Range(-30, 30), 0), Quaternion.identity);
         }
@@ -188,5 +187,10 @@ public class GameController : MonoBehaviour {
         
         player.GetComponent<Renderer>().enabled = true;
         player.transform.position = Vector3.MoveTowards(player.transform.position, new Vector3(0.0f, 0.0f, 0.0f), 50 * Time.deltaTime);
+    }
+
+    public void NewGame()
+    {
+        //set level, stage and health to defaults in game manager
     }
 }
