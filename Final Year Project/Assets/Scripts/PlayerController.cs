@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour {
     public FireZoneScript FZ;
     private float nextFire;
     public float fireRate;
+    public GameObject SceneM; //holds reference to change the scene
 
     private void Start()
     {
@@ -74,7 +75,7 @@ public class PlayerController : MonoBehaviour {
     { //if the wall collides with the player, kill player
         if (collision.gameObject.CompareTag("Wall") && GameController.IsRunning)
         {
-            Dead();
+            Dead(false);
 
         }
     }
@@ -92,7 +93,7 @@ public class PlayerController : MonoBehaviour {
             //kills the ship if the amount of damage was enough to kill it
             if (health <= 0)
             {
-                Dead();
+                Dead(true);
             }
         }
     }
@@ -107,11 +108,23 @@ public class PlayerController : MonoBehaviour {
         Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
     }
 
-    public void Dead()
-    { //when the ship dies, stop rendering it and show the restart button
-        gameObject.GetComponent<Renderer>().enabled = false;
-        restart.gameObject.SetActive(true);
-        GameController.IsRunning = false;
+    public void Dead(bool isAlien)
+    {
+        //if the alien killed you, change to inside ship scene
+        if (isAlien)
+        {
+            GameController.IsRunning = false;
+            //HACK
+            SceneM.GetComponent<ChangeScene>().StartCoroutine("ChangeLevel(2)");
+        }
+        //if a wall killed you, stop the game and give option to restart
+        else
+        {
+            //when the ship dies, stop rendering it and show the restart button
+            gameObject.GetComponent<Renderer>().enabled = false;
+            restart.gameObject.SetActive(true);
+            GameController.IsRunning = false;
+        }
     }
 }
 

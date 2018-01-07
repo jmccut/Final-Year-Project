@@ -7,6 +7,9 @@ public class CharController : MonoBehaviour
 {
     Rigidbody rb;
     public float speed;
+    public Transform shotSpawn;
+    public GameObject bullet;
+    Animator anim;
 
     private void Awake()
     {
@@ -14,18 +17,39 @@ public class CharController : MonoBehaviour
     }
     private void Start()
     {
-        
+        anim = GetComponent<Animator>();
     }
     void Update()
     {
-
+        if(CrossPlatformInputManager.GetButtonUp("Jump"))
+        {
+            Fire();
+        }
     }
 
     private void FixedUpdate()
     {
-        float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-        float vertical = CrossPlatformInputManager.GetAxis("Vertical");
+        //gets input from joysticks to get direction of player
+        float horizontal = CrossPlatformInputManager.GetAxis("Horizontal") * speed;
+        float vertical = CrossPlatformInputManager.GetAxis("Vertical") * speed;
+        Vector3 direction = new Vector3(vertical, 0f, -horizontal);
+        //changes velocity and look rotation according to the direction
+        rb.velocity = direction;
+        if (vertical != 0 || horizontal != 0)
+        {   
+            transform.rotation = Quaternion.LookRotation(direction);
+            anim.SetFloat("Walk", 0.3f);
+        }
+        else
+        {
+            anim.SetFloat("Walk", 0f);
+            
+        }
+        
+    }
 
-        rb.velocity = new Vector3(vertical, 0f, -horizontal);
+    private void Fire()
+    {
+        Instantiate(bullet, shotSpawn.position, shotSpawn.rotation);
     }
 }

@@ -11,3 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main.unity
     guid: 1b78cda86f2ec554190a3fb8c2647420
+  - enabled: 1
+    path: Assets/Scenes/InsideShip.unity
+    guid: 1868bd0d7719db94fb69981d50063caa

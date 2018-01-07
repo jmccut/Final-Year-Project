@@ -186,7 +186,10 @@ public class GameController : MonoBehaviour {
         numAliensToKill = Level * 5;
         
         player.GetComponent<Renderer>().enabled = true;
-        player.transform.position = Vector3.MoveTowards(player.transform.position, new Vector3(0.0f, 0.0f, 0.0f), 50 * Time.deltaTime);
+        //player.transform.position = Vector3.MoveTowards(player.transform.position, new Vector3(0.0f, 0.0f, 0.0f), Time.deltaTime);
+        player.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
+        //ships changes back to larger size
+        player.transform.localScale = new Vector3(15f, 25f, 1f);
     }
 
     public void NewGame()
