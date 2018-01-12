@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityEngine.UI;
 
 public class CharController : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class CharController : MonoBehaviour
     public Transform shotSpawn;
     public GameObject bullet;
     Animator anim;
+    public float Health { get; set; }
+    public float MaxHealth { get; set; }
+    public Slider healthBar;
 
     private void Awake()
     {
@@ -17,6 +21,8 @@ public class CharController : MonoBehaviour
     }
     private void Start()
     {
+        MaxHealth = 100f;
+        Health = MaxHealth;
         anim = GetComponent<Animator>();
     }
     void Update()
@@ -51,5 +57,19 @@ public class CharController : MonoBehaviour
     private void Fire()
     {
         Instantiate(bullet, shotSpawn.position, shotSpawn.rotation);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Alien Bullet"))
+        {
+            Health -= 10f;
+            healthBar.value -= 0.1f;
+            if (Health == 0f)
+            {
+                Destroy(gameObject);
+            }
+            
+        }
     }
 }

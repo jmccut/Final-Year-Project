@@ -20,7 +20,7 @@ public class LaserControl : MonoBehaviour {
     private void OnTriggerEnter(Collider other)
     {
         //if the bullet hit something other than the player
-        if (!other.CompareTag("Player") && !other.CompareTag("Invader") && !other.CompareTag("Bullet"))
+        if (!other.CompareTag("Bullet"))
         {
             Destroy(gameObject);    
         }

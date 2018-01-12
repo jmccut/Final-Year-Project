@@ -11,6 +11,7 @@ TagManager:
   - Zone
   - Bullet
   - Invader
+  - Alien Bullet
   layers:
   - Default
   - TransparentFX
