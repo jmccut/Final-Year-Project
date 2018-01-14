@@ -17,12 +17,12 @@ public class LaserControl : MonoBehaviour {
         rb.velocity = transform.forward * speed;
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        //if the bullet hit something other than the player
-        if (!other.CompareTag("Bullet"))
+        //if the bullet didn't hit another bullet
+        if (!collision.gameObject.CompareTag("Bullet"))
         {
-            Destroy(gameObject);    
+            Destroy(gameObject);
         }
     }
 }

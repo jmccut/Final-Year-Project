@@ -12,6 +12,7 @@ TagManager:
   - Bullet
   - Invader
   - Alien Bullet
+  - Boss
   layers:
   - Default
   - TransparentFX

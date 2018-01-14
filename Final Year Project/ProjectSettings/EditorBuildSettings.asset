@@ -17,3 +17,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/InsideShipLower.unity
     guid: a711ec13df84ce5429360909a3201259
+  - enabled: 1
+    path: Assets/Scenes/InsideShipBoss.unity
+    guid: 0574f343133186c498e7471fee343708

@@ -11,7 +11,7 @@ public class CharController : MonoBehaviour
     public Transform shotSpawn;
     public GameObject bullet;
     Animator anim;
-    public float Health { get; set; }
+    public static float Health { get; set; }
     public float MaxHealth { get; set; }
     public Slider healthBar;
 
@@ -65,11 +65,23 @@ public class CharController : MonoBehaviour
         {
             Health -= 10f;
             healthBar.value -= 0.1f;
-            if (Health == 0f)
+            if (Health <= 0f)
             {
                 Destroy(gameObject);
             }
-            
+        }
+
+    }
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Boss"))
+        {
+            Health--;
+            healthBar.value -= 0.01f;
+            if (Health <= 0f)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

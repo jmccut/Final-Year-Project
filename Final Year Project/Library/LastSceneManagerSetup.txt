@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/InsideShip.unity
+- path: Assets/Scenes/InsideShipBoss.unity
   isLoaded: 1
   isActive: 1

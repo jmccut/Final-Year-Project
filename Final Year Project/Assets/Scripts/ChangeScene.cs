@@ -10,9 +10,9 @@ public class ChangeScene : MonoBehaviour {
         Application.Quit();
     }
 
-    public void StartGame()
+    public void Change(int x)
     {
-        StartCoroutine(ChangeLevel(1));
+        StartCoroutine(ChangeLevel(x));
     }
 
     IEnumerator ChangeLevel(int levelNum)
