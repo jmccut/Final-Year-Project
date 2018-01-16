@@ -11,9 +11,7 @@ public class GameController : MonoBehaviour {
     public GameObject TopWall; //reference to the top wall prefab
     public GameObject alien; //reference to the alien to spawn
     private bool isRunning; //flag to indicate if the game is running
-    private int level; //used to indicate what level of the game the ship is on
     public GUIController GUI; //used to enable the GUI again after the level has ended
-    public Text healthText; //used to set the health text
     public Text levelText; //used to display the current level
     public static int numAliensToKill;//holds the number of aliens to kill per level
     public static bool stageCleared; //flag for when a number of stages are cleared
@@ -21,28 +19,30 @@ public class GameController : MonoBehaviour {
     public GameObject player; //holds reference to the player so they can be revived
     private float previousHeight; //holds the previous height of the walls
     private float wallSpawnSpeed; //holds the speed to spawn the walls
+    private float alienSpawnSpeed;
+    private float middleWallSpawnSpeed;
     private GameObject wallCopy;
     private GameObject TopWallCopy;
-
-    void Start () {
-        //sets the game to: not running, level 1, stage 1 and number of aliens to kill as 5
-        IsRunning = false;
-        Level = 1;
-        Stage = 1;
-        numAliensToKill = Level * 5; //sets the number of aliens to kill to level up
-        previousHeight = -100; //arbitrary number so that the function knows it has not been initialised
-        WallController.speed = 17; //sets starting speed for walls
-        wallSpawnSpeed = 0.35f;
-    }
 
     //used to safely access running flag
     public static bool IsRunning { get; set; }
 
-    //used to safely access level
-    public static int Level { get; set; }
-
-    //used to safely access the stage number
-    public static int Stage { get; set; }
+    void Start () {
+        //sets the game to: not running, level 1, stage 1 and number of aliens to kill as 5
+        IsRunning = false;
+        //initialises level and stage counters
+        if(GameManagerS.Level == 0 && GameManagerS.Stage == 0)
+        {
+            GameManagerS.Level = 1;
+            GameManagerS.Stage = 1;
+        }
+        numAliensToKill = GameManagerS.Level * 5; //sets the number of aliens to kill to level up
+        previousHeight = -100; //arbitrary number so that the function knows it has not been initialised
+        WallController.speed = 17; //sets starting speed for walls
+        wallSpawnSpeed = 0.35f;
+        alienSpawnSpeed = 5f;
+        middleWallSpawnSpeed = 5f;
+    }
 
     private void Update()
     {
@@ -53,8 +53,7 @@ public class GameController : MonoBehaviour {
         }
 
         //sets the text for the health HUD
-        healthText.text = "Health: "+ PlayerController.health;
-        levelText.text = "Level: " + Level + "/5";
+        levelText.text = "Level: " + GameManagerS.Level + "/5";
     }
 
     void LevelUp()
@@ -63,25 +62,29 @@ public class GameController : MonoBehaviour {
         EndGame();
 
         //if this is also the last level (the 5th)
-        if (Level % 5 == 0)
+        if (GameManagerS.Level % 5 == 0)
         {
             //set flag, increment stage count and reset level count
             stageCleared = true;
-            Stage++;
-            Level = 0;
+            GameManagerS.Stage++;
+            GameManagerS.Level = 0;
             WallController.speed = 17;
             wallSpawnSpeed = 0.35f;
+            alienSpawnSpeed = 5f;
+            middleWallSpawnSpeed = 5f;
         }
-
+        else
+        {
+            //speeds up the wall speed and instantiation
+            WallController.speed += 5;
+            wallSpawnSpeed -= 0.05f;
+            middleWallSpawnSpeed -= 0.5f;
+            alienSpawnSpeed -= 1;
+        }
         //increment the level count
-        Level++;
-
-        //speeds up the wall speed and instantiation
-        WallController.speed += 5;
-        wallSpawnSpeed -= 0.05f;
-
+        GameManagerS.Level++;
         //set the number of aliens to kill for the current level
-        numAliensToKill = Level * 5;
+        numAliensToKill = GameManagerS.Level *5;
     }
 
     void makeEnemy()
@@ -156,8 +159,8 @@ public class GameController : MonoBehaviour {
     { //set the game to running, instantiate walls and disable the GUI
         IsRunning = true;
         InvokeRepeating("MakeWall", 0f, wallSpawnSpeed);
-        InvokeRepeating("makeMiddleWall", 0f, 5f);
-        InvokeRepeating("makeEnemy", 0f, 5f);
+        InvokeRepeating("makeMiddleWall", 0f, middleWallSpawnSpeed);
+        InvokeRepeating("makeEnemy", 0f, alienSpawnSpeed);
         GUI.DisableCanvas();
     }
 
@@ -170,8 +173,8 @@ public class GameController : MonoBehaviour {
         {
             Destroy(g.gameObject);
         }
-        PlayerController.health = 500; //resets player health
         StartCoroutine(GUI.EnableCanvas());
+
     }
 
     public void RestartGame()
@@ -183,17 +186,26 @@ public class GameController : MonoBehaviour {
             Destroy(w.gameObject);
         }
 
-        numAliensToKill = Level * 5;
+        numAliensToKill = GameManagerS.Level * 5;
         
         player.GetComponent<Renderer>().enabled = true;
-        //player.transform.position = Vector3.MoveTowards(player.transform.position, new Vector3(0.0f, 0.0f, 0.0f), Time.deltaTime);
-        player.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
-        //ships changes back to larger size
-        player.transform.localScale = new Vector3(15f, 25f, 1f);
     }
 
-    public void NewGame()
+    public void MuteGame()
     {
-        //set level, stage and health to defaults in game manager
+        //if the game was unmuted
+        if (PlayerPrefs.GetInt("IsMuted") == 0)
+        {
+            //mute the game
+            PlayerPrefs.SetInt("IsMuted", 1);
+            GetComponent<AudioSource>().mute = true;
+        }
+        //if the game was muted
+        else if (PlayerPrefs.GetInt("IsMuted") == 1)
+        {
+            //unmute the game
+            PlayerPrefs.SetInt("IsMuted", 0);
+            GetComponent<AudioSource>().mute = false;
+        }
     }
 }

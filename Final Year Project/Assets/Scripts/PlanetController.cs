@@ -15,6 +15,7 @@ public class PlanetController : MonoBehaviour {
     public Sprite uranus;
     public Sprite neptune;
     public Sprite pluto;
+    public ChangeScene change;
     
     //target for the planet movement
     public Vector3 target = new Vector3(-87f, -25f, -0.5f);
@@ -34,7 +35,7 @@ public class PlanetController : MonoBehaviour {
         if (GameController.stageCleared && !GameController.IsRunning)
         {
             //changes sprite of planet to relevant one
-            ChangeSprite(GameController.Stage-1);
+            ChangeSprite(GameManagerS.Stage -1);
 
             //moves the planet to come into view when instantiated
             transform.position = Vector3.MoveTowards(transform.position, target, Time.deltaTime * 10);
@@ -44,6 +45,7 @@ public class PlanetController : MonoBehaviour {
             {
                 GameController.stageCleared = false;
                 atPlanet = true;
+                change.Change(2);
             }
         }
 

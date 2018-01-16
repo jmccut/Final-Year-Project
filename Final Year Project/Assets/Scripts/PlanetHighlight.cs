@@ -11,7 +11,7 @@ public class PlanetHighlight : MonoBehaviour {
         //set the current stage planet to green and make it the selected planet
         for(int i = 0; i < planetList.Length; i++)
         {
-            if(i == GameController.Stage)
+            if(i == GameManagerS.Stage)
             {
                 planetList[i].GetComponent<PlanetTouch>().selected = true;
             }

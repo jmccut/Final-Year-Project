@@ -18,14 +18,14 @@ public class LevelTextController : MonoBehaviour, IPointerClickHandler
 
     void Update () {
         //sets the position of the text to the correct planet based on the stage
-        currentPos = validPositions[GameController.Stage-1];
+        currentPos = validPositions[GameManagerS.Stage -1];
         transform.position = new Vector3(currentPos, 42.5f, 0f);
 
         //changes the colour of the text based on the stage
-        ChangeTextColor(GameController.Stage);
+        ChangeTextColor(GameManagerS.Stage);
 
         //sets the text to display the level out of 5
-        thisText.text = "" + GameController.Level + "/5";
+        thisText.text = "" + GameManagerS.Level + "/5";
     }
 
     

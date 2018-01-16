@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class AlienController : MonoBehaviour {
     private Transform playerTransform; //reference to the player transform
-    public float speed; //sets the speed of the alien
-    public int damage; //sets the damage the alien does on contact with the ship
+    private float speed; //sets the speed of the alien
+    public static int Damage { get; set; } //sets the damage the alien does on contact with the ship
     public GameObject explosion;
 
     void Start () {
+        Damage = 1;
+        speed = 18 * GameManagerS.Level;
         //gets player position
         try
         {
@@ -34,10 +36,10 @@ public class AlienController : MonoBehaviour {
         //makes sure the aliens do not collide with walls
         if (collision.CompareTag("Bullet"))
         {
+            Instantiate(explosion, transform.position, transform.rotation);
             //if the bullet hits an alien, kill both alien and bullet
             Destroy(collision.gameObject);
             Destroy(gameObject);
-            Instantiate(explosion, transform.position, transform.rotation);
             GameController.numAliensToKill--; //decrements the number of aliens left to kill
         }
 

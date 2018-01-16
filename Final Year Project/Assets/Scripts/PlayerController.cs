@@ -7,7 +7,8 @@ public class PlayerController : MonoBehaviour {
 
     public Boundary boundary; //boundary of ship y-axis
     public float speed; //speed of the ship movement
-    public static float health; //ship health
+    private float Health; //ship health
+    private float MaxHealth;
     public Transform shotSpawn; //where the bullet will spawn
     public GameObject shot; //reference to the bullet object
     private SpriteRenderer spriteRenderer; //reference to the ship sprite
@@ -17,14 +18,16 @@ public class PlayerController : MonoBehaviour {
     public FireZoneScript FZ;
     private float nextFire;
     public float fireRate;
-    public GameObject SceneM; //holds reference to change the scene
+    public Slider healthBar;
 
     private void Start()
     {
-        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         //sets the starting health of the player
-        health = 500;
+        MaxHealth = 500;
+        Health = MaxHealth;
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        healthBar.value = 1;
     }
 
     private void Update()
@@ -68,15 +71,15 @@ public class PlayerController : MonoBehaviour {
 
     public void DecrementHealth(int damage)
     { //decrease health by amount specified
-        health -= damage;
+        Health -= damage;
+        healthBar.value = 1-((MaxHealth / Health)/10);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     { //if the wall collides with the player, kill player
         if (collision.gameObject.CompareTag("Wall") && GameController.IsRunning)
         {
-            Dead(false);
-
+            Dead();
         }
     }
 
@@ -84,16 +87,16 @@ public class PlayerController : MonoBehaviour {
     { //if an enemy collides with the player, do damage while it touches the ship
         if (collision.gameObject.CompareTag("Alien1") && GameController.IsRunning)
         {
-            //change the sprite colour to red to show visual feedback
-            spriteRenderer.color = Color.red;
+            //change the sprite colour to flash red to show visual feedback of taking damage
+            spriteRenderer.color = Color.Lerp(Color.red, Color.white, Mathf.PingPong(Time.time, 1));
 
             //decrements the ship health by the amount of damage the alien does
-            DecrementHealth(collision.gameObject.GetComponent<AlienController>().damage);
+            DecrementHealth(AlienController.Damage);
 
             //kills the ship if the amount of damage was enough to kill it
-            if (health <= 0)
+            if (Health <= 0)
             {
-                Dead(true);
+                Dead();
             }
         }
     }
@@ -108,23 +111,14 @@ public class PlayerController : MonoBehaviour {
         Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
     }
 
-    public void Dead(bool isAlien)
+    public void Dead()
     {
-        //if the alien killed you, change to inside ship scene
-        if (isAlien)
-        {
-            GameController.IsRunning = false;
-            //HACK
-            SceneM.GetComponent<ChangeScene>().StartCoroutine("ChangeLevel(2)");
-        }
-        //if a wall killed you, stop the game and give option to restart
-        else
-        {
-            //when the ship dies, stop rendering it and show the restart button
-            gameObject.GetComponent<Renderer>().enabled = false;
-            restart.gameObject.SetActive(true);
-            GameController.IsRunning = false;
-        }
+        //when the ship dies, stop rendering it and show the restart button
+        gameObject.GetComponent<Renderer>().enabled = false;
+        restart.gameObject.SetActive(true);
+        GameController.IsRunning = false;
+        Health = MaxHealth;
+        healthBar.value = 1;
     }
 }
 

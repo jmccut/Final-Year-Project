@@ -14,6 +14,7 @@ public class CharController : MonoBehaviour
     public static float Health { get; set; }
     public float MaxHealth { get; set; }
     public Slider healthBar;
+    public static bool Dead { get; set; }
 
     private void Awake()
     {
@@ -21,12 +22,15 @@ public class CharController : MonoBehaviour
     }
     private void Start()
     {
+        Dead = false;
         MaxHealth = 100f;
         Health = MaxHealth;
         anim = GetComponent<Animator>();
+        healthBar.value = 1;
     }
     void Update()
     {
+        //if the player hits the fire button, fire bullet
         if(CrossPlatformInputManager.GetButtonUp("Jump"))
         {
             Fire();
@@ -56,31 +60,38 @@ public class CharController : MonoBehaviour
 
     private void Fire()
     {
+        //make bullet
         Instantiate(bullet, shotSpawn.position, shotSpawn.rotation);
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        //if the player is hit by an alien bullet
         if (other.gameObject.CompareTag("Alien Bullet"))
         {
+            //dec health and health bar, check if dead
             Health -= 10f;
             healthBar.value -= 0.1f;
             if (Health <= 0f)
             {
                 Destroy(gameObject);
+                Dead = true;
             }
         }
 
     }
     private void OnCollisionStay(Collision collision)
     {
+        //if the player touches the boss, lose health while touching
         if (collision.gameObject.CompareTag("Boss"))
         {
             Health--;
             healthBar.value -= 0.01f;
+            //check if dead
             if (Health <= 0f)
             {
                 Destroy(gameObject);
+                Dead = true;
             }
         }
     }

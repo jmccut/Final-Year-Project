@@ -177,8 +177,6 @@ GameObject:
   - component: {fileID: 9500000}
   - component: {fileID: 11400000}
   - component: {fileID: 14300000}
-  - component: {fileID: 11400004}
-  - component: {fileID: 11400002}
   m_Layer: 0
   m_Name: Char_2
   m_TagString: Untagged
@@ -3687,49 +3685,6 @@ MonoBehaviour:
   v: 0
   h: 0
   run: 0
---- !u!114 &11400002
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e59c4bd3f02744e40982f051e569a586, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Eye: 0
-  Mouth: 0
-  faceAnims: {fileID: 11400004}
---- !u!114 &11400004
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08cb1dd5344b3974abfae3a5a826a575, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  faceExpressions:
-  - rightEye: {fileID: 100094}
-    leftEye: {fileID: 100090}
-  - rightEye: {fileID: 100058}
-    leftEye: {fileID: 100106}
-  - rightEye: {fileID: 100140}
-    leftEye: {fileID: 100068}
-  - rightEye: {fileID: 100060}
-    leftEye: {fileID: 100124}
-  - rightEye: {fileID: 100076}
-    leftEye: {fileID: 100064}
-  - rightEye: {fileID: 100092}
-    leftEye: {fileID: 100110}
-  - rightEye: {fileID: 100066}
-    leftEye: {fileID: 100142}
-  - rightEye: {fileID: 100144}
-    leftEye: {fileID: 100148}
-  mouths: []
 --- !u!137 &13700000
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

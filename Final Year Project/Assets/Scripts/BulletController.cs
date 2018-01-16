@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletController : MonoBehaviour {
-    public GameObject explosion;
     public float speed; //holds speed of the bullets
 
     private void Start()
@@ -21,6 +20,14 @@ public class BulletController : MonoBehaviour {
     {
         //kills the bullet once it leaves the game area
         if (transform.position.x < -130)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Wall"))
         {
             Destroy(gameObject);
         }

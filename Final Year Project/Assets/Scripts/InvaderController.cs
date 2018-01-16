@@ -21,8 +21,6 @@ public class InvaderController : MonoBehaviour {
     private float nextFire;
     public float fireRate;
     public int Health { get; set; }
-    public int MaxHealth { get; set; }
-    public Slider healthBar;
 
     void Start () {
         agent = GetComponent<NavMeshAgent>();
@@ -55,7 +53,7 @@ public class InvaderController : MonoBehaviour {
 
             //enemy follows player
             agent.SetDestination(target.position);
-            //if the enemy is within a distance of the player, shoot them
+            //if the enemy is within a distance of the player, and they can see them and this is an invader enemy, shoot them
             if (Vector3.Distance(transform.position, target.position) < 4f && 
                 Physics.Linecast(shotSpawn.transform.forward, target.transform.position) && 
                 gameObject.CompareTag("Invader"))
@@ -69,6 +67,7 @@ public class InvaderController : MonoBehaviour {
             }
             else
             {
+                //if this is the boss enemy and they are a certain distance away, do shoot animation but not shoot
                 if (gameObject.CompareTag("Boss") && Vector3.Distance(transform.position, target.position) < 1.5f)
                 {
                     anim.SetBool("Shooting", true);
@@ -111,8 +110,8 @@ public class InvaderController : MonoBehaviour {
             if (Health < 0)
             {
                 Destroy(gameObject);
+                InsideController.KilledCount++;
             }
-            //healthBar.value = Health / 100;
             state = State.CHASE;
         }
     }

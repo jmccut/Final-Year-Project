@@ -88,7 +88,11 @@ namespace UnityStandardAssets.CrossPlatformInput
         {
             foreach (Transform t in transform)
             {
-                t.gameObject.SetActive(enabled);
+                if (!t.CompareTag("Restart"))
+                {
+                    t.gameObject.SetActive(enabled);
+                }
+                
             }
         }
 

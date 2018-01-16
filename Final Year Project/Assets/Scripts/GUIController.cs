@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GUIController : MonoBehaviour {
-
+    public GameObject player;
     public void DisableCanvas()
     { //disables each child of the GUI except health which is needed during the game
         foreach (Transform child in transform)
@@ -21,6 +21,9 @@ public class GUIController : MonoBehaviour {
         foreach (Transform child in transform)
         {
             child.gameObject.SetActive(true);
+            //change ship back to bigger size once in menu
+            player.transform.localScale = new Vector3(15f, 25f, 1f);
+            player.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
         }
     }
 }

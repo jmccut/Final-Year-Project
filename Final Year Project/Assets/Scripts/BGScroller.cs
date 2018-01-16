@@ -21,8 +21,7 @@ public class BGScroller : MonoBehaviour {
         //if we are in a game
         else if(GameController.IsRunning)
         {
-            //225
-            scrollSpeed = 175f + (GameController.Level - 1) * 50;
+            scrollSpeed = 163f + (GameManagerS.Level - 1) * 50;
         }
 
         //changes the position of the background
