@@ -178,12 +178,12 @@ c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.VR.WSA.Spa
 db3b233e35a88802fed1717d19c3d9ec Assembly-CSharp-firstpass.dll:UnityStandardAssets.Utility.FollowTarget
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.BGScroller
 a8796ecdc9d5c260bbe32f30c4b10708 Assembly-CSharp-firstpass.dll:UnityStandardAssets.CrossPlatformInput.TouchPad
-05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.WallController
+dd5481137759597d614818793c90a7fe Assembly-CSharp.dll:.WallController
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.ChangeScene
 0ad469aca31264c6140b1e503c43ab6b Assembly-CSharp-firstpass.dll:UnityStandardAssets.Utility.TimedObjectDestructor
 c989ed1eecd09f794ec7cdbb7dc9730c Assembly-CSharp.dll:.PlanetController
 c4aec148e266db04650061f7530e4210 Assembly-CSharp.dll:.PlayerController
 815a39c27e46d40ddc1259f473c17d13 Assembly-CSharp.dll:.LadderScript
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp-firstpass.dll:UnityStandardAssets.Utility.FPSCounter
-32487febc2148d28854370c3f76531ae Assembly-CSharp.dll:.GameController
+cdd9972c9123644a133b9cff2ced59e6 Assembly-CSharp.dll:.GameController
 0f3d4bb7128a287827d041c696039525 Assembly-CSharp-firstpass.dll:UnityStandardAssets.Utility.AutoMobileShaderSwitch

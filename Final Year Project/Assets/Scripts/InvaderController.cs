@@ -25,8 +25,14 @@ public class InvaderController : MonoBehaviour {
     void Start () {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
-        Health = 100;
-        //healthBar.value = 1f;
+        if (gameObject.CompareTag("Boss")){
+            Health = 200;
+        }
+        else
+        {
+            Health = 100;
+        }
+
 
         //random pause between next wander directions
         nextWander = Random.Range(2f, 6f);
@@ -147,8 +153,8 @@ public class InvaderController : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        //if the player enters the collision radius chase him
-        if (other.transform.gameObject.CompareTag("Player"))
+        //if the player enters the collision radius and he isn't invulnerable, chase him
+        if (other.transform.gameObject.CompareTag("Player") && !CharController.Invul)
         {
             //if the enemy is in the line of sight
             if (Physics.Linecast(transform.position, other.transform.position))

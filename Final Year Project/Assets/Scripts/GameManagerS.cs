@@ -12,17 +12,19 @@ class PlayerData
 {
     public int Level;
     public int Stage;
+    public bool OnBossLevel;
+    public float Health;
 }
 public class GameManagerS : MonoBehaviour
 {
     public static int Level { get; set; } //holds current level
     public static int Stage { get; set; }
+    public static float Health { get; set; }
+    public static bool OnBossLevel { get; set; }
 
 
     private void Awake()
     {
-        //Level = 1;
-        //Stage = 1;
         PlayerPrefs.SetInt("IsMuted", 0);
         //keeps this object persistent through the game
         DontDestroyOnLoad(gameObject);
@@ -38,6 +40,8 @@ public class GameManagerS : MonoBehaviour
         PlayerData pd = new PlayerData();
         pd.Level = Level;
         pd.Stage = Stage;
+        pd.Health = Health;
+        pd.OnBossLevel = OnBossLevel;
         //serialize then close
         bf.Serialize(file, pd);
         file.Close();
@@ -55,7 +59,17 @@ public class GameManagerS : MonoBehaviour
             PlayerData pd = (PlayerData)bf.Deserialize(file);
             Level = pd.Level;
             Stage = pd.Stage;
+            Health = pd.Health;
+            OnBossLevel = pd.OnBossLevel;
             file.Close();
         }
+    }
+
+    public void Reset()
+    {
+        Stage = 0;
+        Level = 0;
+        OnBossLevel = false;
+        Health = 100f;
     }
 }

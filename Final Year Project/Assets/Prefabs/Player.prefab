@@ -165,7 +165,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4731565721190176}
   - component: {fileID: 95930170245863004}
-  - component: {fileID: 143584177665803760}
   - component: {fileID: 54296897675042942}
   - component: {fileID: 65195119295974148}
   - component: {fileID: 114354010732319672}
@@ -3993,6 +3992,7 @@ MonoBehaviour:
   speed: 2
   shotSpawn: {fileID: 4112186287575320}
   bullet: {fileID: 1888714153843922, guid: 154d3a658ff1166409fdbdbb4b6f88f2, type: 2}
+  healthBar: {fileID: 0}
 --- !u!137 &137076259409635446
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
@@ -4060,20 +4060,3 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.3576203, y: 0.00000047683716, z: 0.05264491}
     m_Extent: {x: 1.5354614, y: 1.3671823, z: 0.52910286}
   m_DirtyAABB: 0
---- !u!143 &143584177665803760
-CharacterController:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1144786005479598}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 2.8
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 1.46, z: 0}

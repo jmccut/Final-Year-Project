@@ -11,22 +11,27 @@ public class CharController : MonoBehaviour
     public Transform shotSpawn;
     public GameObject bullet;
     Animator anim;
-    public static float Health { get; set; }
     public float MaxHealth { get; set; }
     public Slider healthBar;
+    public Slider invulBar;
     public static bool Dead { get; set; }
-
+    public static bool Invul { get; set; }
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
     private void Start()
     {
+        invulBar.value = 1;
+        StartCoroutine(StartInvul());
         Dead = false;
         MaxHealth = 100f;
-        Health = MaxHealth;
+        if (GameManagerS.Health <= 0)
+        {
+            GameManagerS.Health = MaxHealth;
+        }
         anim = GetComponent<Animator>();
-        healthBar.value = 1;
+        healthBar.value = GameManagerS.Health / MaxHealth;
     }
     void Update()
     {
@@ -58,10 +63,34 @@ public class CharController : MonoBehaviour
         
     }
 
+    public void IncrementHealth(int bonus)
+    { //decrease health by amount specified
+        GameManagerS.Health += bonus;
+        if(GameManagerS.Health > MaxHealth)
+        {
+            GameManagerS.Health = MaxHealth;
+        }
+        healthBar.value = GameManagerS.Health / MaxHealth;
+    }
+
+    public void DecrementHealth(int damage)
+    { //decrease health by amount specified
+        GameManagerS.Health -= damage;
+        if (GameManagerS.Health <= 0)
+        {
+            Dead = true;
+            Destroy(gameObject);
+        }
+        healthBar.value = GameManagerS.Health / MaxHealth;
+    }
+
     private void Fire()
     {
-        //make bullet
-        Instantiate(bullet, shotSpawn.position, shotSpawn.rotation);
+        if (!Invul)
+        {
+            //make bullet
+            Instantiate(bullet, shotSpawn.position, shotSpawn.rotation);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -70,29 +99,36 @@ public class CharController : MonoBehaviour
         if (other.gameObject.CompareTag("Alien Bullet"))
         {
             //dec health and health bar, check if dead
-            Health -= 10f;
-            healthBar.value -= 0.1f;
-            if (Health <= 0f)
-            {
-                Destroy(gameObject);
-                Dead = true;
-            }
+            DecrementHealth(10);
         }
 
     }
     private void OnCollisionStay(Collision collision)
     {
         //if the player touches the boss, lose health while touching
-        if (collision.gameObject.CompareTag("Boss"))
+        if (collision.gameObject.CompareTag("Boss") && !Invul)
         {
-            Health--;
-            healthBar.value -= 0.01f;
-            //check if dead
-            if (Health <= 0f)
+            DecrementHealth(1);
+        }
+    }
+
+    public IEnumerator StartInvul()
+    {
+        //player is invulnerable until invul bar is empty
+        Invul = true;
+        while (invulBar.value >= 0)
+        {
+            //decrement bar value by 0.01 every 0.05 seconds
+            invulBar.value -= 0.01f;
+            yield return new WaitForSeconds(0.05f);
+            //once bar is empty, player is no longer invulnerable
+            if (invulBar.value <= 0)
             {
-                Destroy(gameObject);
-                Dead = true;
+                Invul = false;
+                invulBar.gameObject.SetActive(false);
+                break;
             }
         }
+        
     }
 }

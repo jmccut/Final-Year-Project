@@ -45,6 +45,7 @@ public class PlanetController : MonoBehaviour {
             {
                 GameController.stageCleared = false;
                 atPlanet = true;
+                GameManagerS.OnBossLevel = true;
                 change.Change(2);
             }
         }

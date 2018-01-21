@@ -7,8 +7,8 @@ public class PlayerController : MonoBehaviour {
 
     public Boundary boundary; //boundary of ship y-axis
     public float speed; //speed of the ship movement
-    private float Health; //ship health
-    private float MaxHealth;
+    public float Health; //ship health
+    public float MaxHealth;
     public Transform shotSpawn; //where the bullet will spawn
     public GameObject shot; //reference to the bullet object
     private SpriteRenderer spriteRenderer; //reference to the ship sprite
@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour {
     private float nextFire;
     public float fireRate;
     public Slider healthBar;
+    public GameObject zap;
+    public GameObject explosion;
 
     private void Start()
     {
@@ -72,7 +74,7 @@ public class PlayerController : MonoBehaviour {
     public void DecrementHealth(int damage)
     { //decrease health by amount specified
         Health -= damage;
-        healthBar.value = 1-((MaxHealth / Health)/10);
+        healthBar.value = Health/MaxHealth;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -80,6 +82,22 @@ public class PlayerController : MonoBehaviour {
         if (collision.gameObject.CompareTag("Wall") && GameController.IsRunning)
         {
             Dead();
+        }
+        else if(collision.gameObject.CompareTag("Alien Bullet") && GameController.IsRunning)
+        {
+            Destroy(collision.gameObject);
+            //make zap particle effect and attach it to ship
+            GameObject part = Instantiate(zap, gameObject.transform.position, Quaternion.identity);
+            (part).transform.parent = (gameObject).transform;
+            part.transform.Rotate(0f, 0f, -90f);
+            part.transform.localScale = new Vector3(10, 10, 10);
+            StartCoroutine(wait(part));
+            DecrementHealth(AlienController.Damage);
+            //kills the ship if the amount of damage was enough to kill it
+            if (Health <= 0)
+            {
+                Dead();
+            }
         }
     }
 
@@ -89,7 +107,6 @@ public class PlayerController : MonoBehaviour {
         {
             //change the sprite colour to flash red to show visual feedback of taking damage
             spriteRenderer.color = Color.Lerp(Color.red, Color.white, Mathf.PingPong(Time.time, 1));
-
             //decrements the ship health by the amount of damage the alien does
             DecrementHealth(AlienController.Damage);
 
@@ -113,12 +130,19 @@ public class PlayerController : MonoBehaviour {
 
     public void Dead()
     {
+        Instantiate(explosion, gameObject.transform.position, Quaternion.identity);
         //when the ship dies, stop rendering it and show the restart button
         gameObject.GetComponent<Renderer>().enabled = false;
         restart.gameObject.SetActive(true);
         GameController.IsRunning = false;
         Health = MaxHealth;
         healthBar.value = 1;
+    }
+
+    IEnumerator wait(GameObject zap)
+    {
+        yield return new WaitForSeconds(0.5f);
+        Destroy(zap.gameObject);
     }
 }
 
