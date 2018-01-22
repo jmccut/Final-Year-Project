@@ -13,6 +13,7 @@ public class AlienController : MonoBehaviour {
     public GameObject shot;
     public enum Type { TYPE1, TYPE2, TYPE3};
     public Type type;
+    private float health;
 
     void Start () {
         //sets type of alien
@@ -21,6 +22,7 @@ public class AlienController : MonoBehaviour {
             type = Type.TYPE1;
             Damage = 1;
             speed = 18 * GameManagerS.Level;
+            health = 50;
         }
         else if(gameObject.CompareTag("Alien2"))
         {
@@ -28,9 +30,10 @@ public class AlienController : MonoBehaviour {
             type = Type.TYPE2;
             Damage = 50;
             speed = 400 * GameManagerS.Level;
+            health = 75;
         }
         else if(gameObject.CompareTag("Alien3"))
-        {
+        { //NOT YET IMPLEMENTED
             type = Type.TYPE3;
             Damage = 1;
             speed = 18 * GameManagerS.Level;
@@ -71,18 +74,12 @@ public class AlienController : MonoBehaviour {
         //if alien is hit by a bullet
         if (collision.CompareTag("Bullet"))
         {
-            //make enemy explosion and then kill the particle effect after its duration
-            GameObject bang = Instantiate(explosion, transform.position, transform.rotation);
-            ParticleSystem parts = bang.GetComponent<ParticleSystem>();
-            float totalDuration = parts.main.duration + parts.main.startLifetimeMultiplier;
-            Destroy(bang, totalDuration);
-            //spawn new enemy in its place
-            Instantiate(gameObject, new Vector3(-125f, gameObject.transform.position.y, gameObject.transform.position.z), Quaternion.identity);
-            //kill alien and bullet
             Destroy(collision.gameObject);
-            Destroy(gameObject);
-            GameController.numAliensToKill--; //decrements the number of aliens left to kill
-
+            health -= PlayerController.Damage;
+            if(health <= 0)
+            {
+                Dead();
+            }
         }
 
     }
@@ -99,5 +96,23 @@ public class AlienController : MonoBehaviour {
     void Shoot()
     { //makes shot
         Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
+    }
+
+    void Dead()
+    {
+        //make enemy explosion and then kill the particle effect after its duration
+        GameObject bang = Instantiate(explosion, transform.position, transform.rotation);
+        ParticleSystem parts = bang.GetComponent<ParticleSystem>();
+        float totalDuration = parts.main.duration + parts.main.startLifetimeMultiplier;
+        Destroy(bang, totalDuration);
+        if(type == Type.TYPE2)
+        {
+            //spawn new enemy in its place
+            Instantiate(gameObject, new Vector3(-125f, gameObject.transform.position.y, gameObject.transform.position.z), Quaternion.identity);
+        }
+        GameController.numAliensToKill--; //decrements the number of aliens left to kill
+        GameManagerS.Money += 10;
+        //kill alien and bullet
+        Destroy(gameObject);
     }
 }

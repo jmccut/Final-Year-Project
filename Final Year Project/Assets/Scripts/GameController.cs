@@ -26,24 +26,34 @@ public class GameController : MonoBehaviour {
     private GameObject wallCopy;
     private GameObject TopWallCopy;
     public ChangeScene change;
+    public Text moneyT;
 
     //used to safely access running flag
     public static bool IsRunning { get; set; }
 
-    void Start () {
-        //sets the game to: not running, level 1, stage 1 and number of aliens to kill as 5
-        IsRunning = false;
-        //initialises level and stage counters
-        if(GameManagerS.Level == 0 && GameManagerS.Stage == 0)
+    private void Awake()
+    {
+        //initialises game manager state
+        if (GameManagerS.Level == 0 && GameManagerS.Stage == 0)
         {
-            GameManagerS.Level = 5;
+            GameManagerS.Level = 1;
             GameManagerS.Stage = 1;
             GameManagerS.OnBossLevel = false;
+            GameManagerS.ShipWepLevel = 1;
+            GameManagerS.BossWepLevel = 1;
+            GameManagerS.Money = 0;
+            GameManagerS.PowerUps = new bool[3];
         }
+        //changes to boss level if the save file was on the boss
         else if (GameManagerS.OnBossLevel)
         {
             change.Change(2);
         }
+    }
+
+    void Start () {
+        //sets the game to: not running, level 1, stage 1 and number of aliens to kill as 5
+        IsRunning = false;
         ResetAliensToKill();
          //sets the number of aliens to kill to level up
         previousHeight = -100; //arbitrary number so that the function knows it has not been initialised
@@ -63,6 +73,7 @@ public class GameController : MonoBehaviour {
 
         //sets the text for the health HUD
         levelText.text = "Level: " + GameManagerS.Level + "/5";
+        moneyT.text = "£" + GameManagerS.Money;
     }
 
     void LevelUp()
@@ -85,18 +96,22 @@ public class GameController : MonoBehaviour {
         }
         //increment the level count
         GameManagerS.Level++;
-        //sets number of aliens to 
+        //resets alien numbers
         ResetAliensToKill();
+        //resets random wall generator
+        previousHeight = -100;
     }
 
     void makeEnemy()
-    { //spawn enemy at the beginning of the map in a random range along the y
-        if (GameManagerS.Stage % 2 > 0)
+    { 
+        if (GameManagerS.Stage < 3)
         {
+            //make standard enemy
             Instantiate(alien, new Vector3(-125f, Random.Range(-30, 30), 0), Quaternion.identity);
         }
-        else if(GameManagerS.Stage % 2 == 0)
+        else
         {
+            //spawn enemy at the beginning of the map in a random range along the y
             int n = 30;
             for (int i = 0; i < 5; i++)
             {
@@ -109,7 +124,7 @@ public class GameController : MonoBehaviour {
     void makeMiddleWall()
     { //spawn a middle wall with a random y value and a random scale if the other walls aren't too high
         Vector3 randVect = new Vector3(0f, Random.Range(0f, wallHeightRange), 0f);
-        if (wallCopy.transform.localScale.y < 90f)
+        if (wallCopy.transform.localScale.y < 85f)
         {
             GameObject middleWall = Instantiate(wall, new Vector3(-125f, Random.Range(-26f, 26), wall.transform.position.z), Quaternion.identity);
             middleWall.transform.localScale += randVect;
@@ -167,11 +182,11 @@ public class GameController : MonoBehaviour {
         IsRunning = true;
         InvokeRepeating("MakeWall", 0f, wallSpawnSpeed - (0.05f *GameManagerS.Level));
         InvokeRepeating("makeMiddleWall", 0f, middleWallSpawnSpeed - (0.5f * GameManagerS.Level));
-        if (GameManagerS.Stage % 2 > 0)
+        if (GameManagerS.Stage < 3)
         {
             InvokeRepeating("makeEnemy", 0f, alienSpawnSpeed - (1 * GameManagerS.Level));
         }
-        else if (GameManagerS.Stage % 2 == 0)
+        else
         {
             makeEnemy();
         }
@@ -183,7 +198,7 @@ public class GameController : MonoBehaviour {
     { //set the game to ended, stop making walls, kill the aliens and bullets and enable the GUI again
         IsRunning = false;
         CancelInvoke();
-        if (GameManagerS.Stage % 2 > 0)
+        if (GameManagerS.Stage < 3)
         {
             GameObject[] aliens = GameObject.FindGameObjectsWithTag("Alien1");
             foreach (GameObject g in aliens)
@@ -191,7 +206,7 @@ public class GameController : MonoBehaviour {
                 Destroy(g.gameObject);
             }
         }
-        else if (GameManagerS.Stage % 2 == 0)
+        else
         {
             GameObject[] aliens = GameObject.FindGameObjectsWithTag("Alien2");
             GameObject[] bullets = GameObject.FindGameObjectsWithTag("Alien Bullet");
@@ -219,7 +234,7 @@ public class GameController : MonoBehaviour {
         }
 
         ResetAliensToKill();
-
+        previousHeight = -100;
         player.GetComponent<Renderer>().enabled = true;
     }
 
@@ -243,15 +258,6 @@ public class GameController : MonoBehaviour {
 
     private void ResetAliensToKill()
     {
-        //sets the number of aliens to kill depending on level
-        if (GameManagerS.Stage % 2 > 0)
-        {
-            numAliensToKill = GameManagerS.Level * numAliensMultiplier;
-        }
-        else
-        {
-            //more aliens to kill for 'wave' stages
-            numAliensToKill = GameManagerS.Level * numAliensMultiplier * 2;
-        }
+        numAliensToKill = GameManagerS.Level * numAliensMultiplier;
     }
 }

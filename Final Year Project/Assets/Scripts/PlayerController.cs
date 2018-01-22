@@ -21,9 +21,12 @@ public class PlayerController : MonoBehaviour {
     public Slider healthBar;
     public GameObject zap;
     public GameObject explosion;
+    public static int Damage { get; set; }
 
     private void Start()
     {
+        //set damage according to game manager state
+        Damage = 25 * GameManagerS.ShipWepLevel;
         //sets the starting health of the player
         MaxHealth = 500;
         Health = MaxHealth;
@@ -130,7 +133,11 @@ public class PlayerController : MonoBehaviour {
 
     public void Dead()
     {
-        Instantiate(explosion, gameObject.transform.position, Quaternion.identity);
+        //make explosion and then kill the particle effect after its duration
+        GameObject bang = Instantiate(explosion, transform.position, transform.rotation);
+        ParticleSystem parts = bang.GetComponent<ParticleSystem>();
+        float totalDuration = parts.main.duration + parts.main.startLifetimeMultiplier;
+        Destroy(bang, totalDuration);
         //when the ship dies, stop rendering it and show the restart button
         gameObject.GetComponent<Renderer>().enabled = false;
         restart.gameObject.SetActive(true);

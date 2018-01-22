@@ -16,12 +16,14 @@ public class CharController : MonoBehaviour
     public Slider invulBar;
     public static bool Dead { get; set; }
     public static bool Invul { get; set; }
+    public static int Damage { get; set; }
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
     private void Start()
     {
+        Damage = 40 * GameManagerS.BossWepLevel;
         invulBar.value = 1;
         StartCoroutine(StartInvul());
         Dead = false;

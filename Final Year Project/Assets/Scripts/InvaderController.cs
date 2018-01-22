@@ -32,8 +32,6 @@ public class InvaderController : MonoBehaviour {
         {
             Health = 100;
         }
-
-
         //random pause between next wander directions
         nextWander = Random.Range(2f, 6f);
         timer = nextWander;
@@ -112,11 +110,10 @@ public class InvaderController : MonoBehaviour {
         if (collision.transform.gameObject.CompareTag("Bullet"))
         {
             //takes 3 shots to kill an alien
-            Health -= 40;
+            Health -= CharController.Damage;
             if (Health < 0)
             {
-                Destroy(gameObject);
-                InsideController.KilledCount++;
+                Dead();
             }
             state = State.CHASE;
         }
@@ -166,5 +163,12 @@ public class InvaderController : MonoBehaviour {
                 state = State.CHASE;
             }
         }
+    }
+
+    void Dead()
+    {
+        InsideController.KilledCount++;
+        GameManagerS.Money += 10;
+        Destroy(gameObject);
     }
 }

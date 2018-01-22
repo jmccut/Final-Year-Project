@@ -14,6 +14,10 @@ class PlayerData
     public int Stage;
     public bool OnBossLevel;
     public float Health;
+    public int Money;
+    public int ShipWepLevel;
+    public int BossWepLevel;
+    public bool[] PowerUps;
 }
 public class GameManagerS : MonoBehaviour
 {
@@ -21,6 +25,10 @@ public class GameManagerS : MonoBehaviour
     public static int Stage { get; set; }
     public static float Health { get; set; }
     public static bool OnBossLevel { get; set; }
+    public static int Money { get; set; }
+    public static int ShipWepLevel { get; set; }
+    public static int BossWepLevel { get; set; }
+    public static bool[] PowerUps { get; set; }
 
 
     private void Awake()
@@ -42,6 +50,10 @@ public class GameManagerS : MonoBehaviour
         pd.Stage = Stage;
         pd.Health = Health;
         pd.OnBossLevel = OnBossLevel;
+        pd.Money = Money;
+        pd.ShipWepLevel = ShipWepLevel;
+        pd.BossWepLevel = BossWepLevel;
+        pd.PowerUps = PowerUps;
         //serialize then close
         bf.Serialize(file, pd);
         file.Close();
@@ -60,6 +72,10 @@ public class GameManagerS : MonoBehaviour
             Level = pd.Level;
             Stage = pd.Stage;
             Health = pd.Health;
+            Money = pd.Money;
+            ShipWepLevel = pd.ShipWepLevel;
+            BossWepLevel = pd.BossWepLevel;
+            PowerUps = pd.PowerUps;
             OnBossLevel = pd.OnBossLevel;
             file.Close();
         }
@@ -67,9 +83,15 @@ public class GameManagerS : MonoBehaviour
 
     public void Reset()
     {
+        //resets all player data ready for new game
         Stage = 0;
         Level = 0;
         OnBossLevel = false;
         Health = 100f;
+
+        Money = 0;
+        ShipWepLevel = 0;
+        BossWepLevel = 0;
+        PowerUps = new bool[3];
     }
 }
