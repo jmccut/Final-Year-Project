@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class CharController : MonoBehaviour
 {
+    AudioSource sfx;
     Rigidbody rb;
     public float speed;
     public Transform shotSpawn;
@@ -17,9 +18,12 @@ public class CharController : MonoBehaviour
     public static bool Dead { get; set; }
     public static bool Invul { get; set; }
     public static int Damage { get; set; }
+    public static bool GotKey { get; set; }
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        sfx = GetComponent<AudioSource>();
     }
     private void Start()
     {
@@ -81,6 +85,7 @@ public class CharController : MonoBehaviour
         if (GameManagerS.Health <= 0)
         {
             Dead = true;
+            SoundController.GetSound(6).Play();
             Destroy(gameObject);
         }
         healthBar.value = GameManagerS.Health / MaxHealth;
@@ -92,6 +97,7 @@ public class CharController : MonoBehaviour
         {
             //make bullet
             Instantiate(bullet, shotSpawn.position, shotSpawn.rotation);
+            sfx.Play();
         }
     }
 
@@ -100,8 +106,16 @@ public class CharController : MonoBehaviour
         //if the player is hit by an alien bullet
         if (other.gameObject.CompareTag("Alien Bullet"))
         {
-            //dec health and health bar, check if dead
-            DecrementHealth(10);
+            if (PlayerPrefs.GetInt("HardMode") == 0)
+            {
+                //dec health and health bar, check if dead
+                DecrementHealth(10);
+            }
+            else
+            {
+                DecrementHealth(20);
+            }
+            Destroy(other.gameObject);
         }
 
     }
@@ -110,7 +124,15 @@ public class CharController : MonoBehaviour
         //if the player touches the boss, lose health while touching
         if (collision.gameObject.CompareTag("Boss") && !Invul)
         {
-            DecrementHealth(1);
+            //player takes more damage when hard mode is enabled
+            if (PlayerPrefs.GetInt("HardMode") == 0)
+            {
+                DecrementHealth(1);
+            }
+            else
+            {
+                DecrementHealth(2);
+            }
         }
     }
 

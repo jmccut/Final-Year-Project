@@ -5,31 +5,56 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PlanetTouch : MonoBehaviour, IPointerClickHandler
-{
+{ 
     public GameController gameController;
     public bool selected;
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    public Text message;
+    void Update () {
+        //if the planet has been selected
         if (selected)
         {
-            GetComponent<Image>().color = Color.Lerp(Color.white, Color.green, Mathf.PingPong(Time.time, 1));
+            //make it flash green
+            GetComponent<Image>().color = Color.Lerp(Color.white, Color.green, 
+                Mathf.PingPong(Time.time, 1));
         }
+        //otherwise leave it normal
         else
         {
             GetComponent<Image>().color = Color.white;
         }
+        
     }
-    //if the planet is the current stage planet then clicking it will start the game
+
     public void OnPointerClick(PointerEventData eventData)
     {
+       
         if (selected)
         {
-            gameController.StartGame();
+            bool temp = false;
+            foreach(int i in GameManagerS.BaseDamage)
+            {
+                if(i == 100)
+                {
+                    temp = true;
+                    StartCoroutine(FadeTextToZeroAlpha(6,message));
+                }
+            }
+            if(!temp){
+                gameController.StartGame();
+            }
+            
         }
+    }
+
+    public IEnumerator FadeTextToZeroAlpha(float t, Text i)
+    {
+        i.gameObject.SetActive(true);
+        i.color = new Color(i.color.r, i.color.g, i.color.b, 1);
+        while (i.color.a > 0.0f)
+        {
+            i.color = new Color(i.color.r, i.color.g, i.color.b, i.color.a - (Time.deltaTime / t));
+            yield return null;
+        }
+        i.gameObject.SetActive(false);
     }
 }

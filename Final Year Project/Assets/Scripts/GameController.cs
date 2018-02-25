@@ -11,6 +11,10 @@ public class GameController : MonoBehaviour {
     public GameObject TopWall; //reference to the top wall prefab
     public GameObject alien; //reference to the alien to spawn
     public GameObject alien2;
+    public GameObject alien3;
+    public GameObject alien32;
+    public GameObject destination;
+    public GameObject destination2;
     private bool isRunning; //flag to indicate if the game is running
     public GUIController GUI; //used to enable the GUI again after the level has ended
     public Text levelText; //used to display the current level
@@ -27,13 +31,20 @@ public class GameController : MonoBehaviour {
     private GameObject TopWallCopy;
     public ChangeScene change;
     public Text moneyT;
+    public Text partsT;
+    public GameObject tutorial;
+
+    public static List<GameObject> AliveAliens { get; set; }
 
     //used to safely access running flag
     public static bool IsRunning { get; set; }
 
     private void Awake()
     {
-        //initialises game manager state
+        //----------------------------------------
+        //MAKE SURE THESE ARE RESET BEFORE FINAL |
+        //----------------------------------------
+        //initialises game manager state for new game
         if (GameManagerS.Level == 0 && GameManagerS.Stage == 0)
         {
             GameManagerS.Level = 1;
@@ -42,18 +53,32 @@ public class GameController : MonoBehaviour {
             GameManagerS.ShipWepLevel = 1;
             GameManagerS.BossWepLevel = 1;
             GameManagerS.Money = 0;
+            GameManagerS.Parts = 0;
             GameManagerS.PowerUps = new bool[3];
+            GameManagerS.BaseDamage = new int[9];
+            GameManagerS.BaseLevels = new int[9];
+            GameManagerS.CompleteObjList = new Dictionary<int, bool>(15);
+            GameManagerS.TotalAliensKilled = 0;
+            GameManagerS.TotalPartsCollected = 0;
+            for (int i = 0; i < 15; i++)
+            {
+                GameManagerS.CompleteObjList.Add(i, false);
+            }
+            
+            tutorial.SetActive(true);
         }
         //changes to boss level if the save file was on the boss
         else if (GameManagerS.OnBossLevel)
         {
             change.Change(2);
         }
+        AliveAliens = new List<GameObject>();
     }
 
     void Start () {
         //sets the game to: not running, level 1, stage 1 and number of aliens to kill as 5
         IsRunning = false;
+
         ResetAliensToKill();
          //sets the number of aliens to kill to level up
         previousHeight = -100; //arbitrary number so that the function knows it has not been initialised
@@ -70,19 +95,22 @@ public class GameController : MonoBehaviour {
         {
             LevelUp();
         }
-
         //sets the text for the health HUD
-        levelText.text = "Level: " + GameManagerS.Level + "/5";
+        levelText.text = "Level: " + GameManagerS.Level + "/4";
         moneyT.text = "£" + GameManagerS.Money;
+        partsT.text = GameManagerS.Parts.ToString();
     }
 
     void LevelUp()
     { //handles everything needed to level up
-
         EndGame();
-
-        //if this is also the last level (the 5th)
-        if (GameManagerS.Level % 5 == 0)
+        //turn missile mode off for the player if it was on
+        if (GameManagerS.PowerUps[0])
+        {
+            GameManagerS.PowerUps[0] = false;
+        }
+        //if this is also the last level (the 4th)
+        if (GameManagerS.Level % 4 == 0)
         {
             //if that was the last stage go to end scene
             if (GameManagerS.Stage == 9)
@@ -100,6 +128,11 @@ public class GameController : MonoBehaviour {
         ResetAliensToKill();
         //resets random wall generator
         previousHeight = -100;
+        //sets objective to complete
+        if(player.GetComponent<PlayerController>().Health == 100)
+        {
+            GameManagerS.CompleteObjList[4] = true;
+        }
     }
 
     void makeEnemy()
@@ -109,7 +142,7 @@ public class GameController : MonoBehaviour {
             //make standard enemy
             Instantiate(alien, new Vector3(-125f, Random.Range(-30, 30), 0), Quaternion.identity);
         }
-        else
+        else if (GameManagerS.Stage < 6)
         {
             //spawn enemy at the beginning of the map in a random range along the y
             int n = 30;
@@ -118,6 +151,28 @@ public class GameController : MonoBehaviour {
                 Instantiate(alien2, new Vector3(-125f, n, 0), Quaternion.identity);
                 n -= 15;
             } 
+        }
+        else
+        {
+            //creates third type of alien
+            GameObject a1 =Instantiate(alien3, new Vector3(-125f, 5f, 0), Quaternion.identity);
+            GameObject a2 = Instantiate(alien32, new Vector3(-125f, -5f, 0), Quaternion.identity);
+            //spawns laser destination objects
+            GameObject dest = Instantiate(destination.gameObject, destination.transform.position, Quaternion.identity);
+            GameObject dest2 = Instantiate(destination2.gameObject, destination2.transform.position, Quaternion.identity);
+            //sets the partner aliens for the sequence
+            a1.GetComponent<AlienController>().partnerAlien = a2;
+            a2.GetComponent<AlienController>().partnerAlien = a1;
+            //sets alien references in destinations
+            dest.GetComponent<LaserDestination>().alien = a1;
+            dest2.GetComponent<LaserDestination>().alien = a2;
+            //sets destinations in the lasers
+            a1.transform.GetChild(1).GetComponent<ExtendedLaser>().destination = dest.transform;
+            a1.transform.GetChild(1).GetComponent<ExtendedLaser>().destination2 = dest2.transform;
+
+            a2.transform.GetChild(1).GetComponent<ExtendedLaser>().destination = dest.transform;
+            a2.transform.GetChild(1).GetComponent<ExtendedLaser>().destination2 = dest2.transform;
+
         }
     }
 
@@ -178,18 +233,25 @@ public class GameController : MonoBehaviour {
     }
 
     public void StartGame()
-    { //set the game to running, instantiate walls and disable the GUI
+    { //set the game to running
         IsRunning = true;
+        //start making walls
         InvokeRepeating("MakeWall", 0f, wallSpawnSpeed - (0.05f *GameManagerS.Level));
         InvokeRepeating("makeMiddleWall", 0f, middleWallSpawnSpeed - (0.5f * GameManagerS.Level));
+        //instantiate different enemy types depending on the stage
         if (GameManagerS.Stage < 3)
         {
             InvokeRepeating("makeEnemy", 0f, alienSpawnSpeed - (1 * GameManagerS.Level));
         }
-        else
+        else if (GameManagerS.Stage < 6)
         {
             makeEnemy();
         }
+        else
+        {
+            InvokeRepeating("makeEnemy", 0f, (alienSpawnSpeed*2) - (1 * GameManagerS.Level));
+        }
+        //increase alien bullet speed
         BulletController.Speed *= GameManagerS.Level;   
         GUI.DisableCanvas();
     }
@@ -206,7 +268,7 @@ public class GameController : MonoBehaviour {
                 Destroy(g.gameObject);
             }
         }
-        else
+        else if(GameManagerS.Stage < 6)
         {
             GameObject[] aliens = GameObject.FindGameObjectsWithTag("Alien2");
             GameObject[] bullets = GameObject.FindGameObjectsWithTag("Alien Bullet");
@@ -215,6 +277,14 @@ public class GameController : MonoBehaviour {
                 Destroy(g.gameObject);
             }
             foreach (GameObject g in bullets)
+            {
+                Destroy(g.gameObject);
+            }
+        }
+        else
+        {
+            GameObject[] aliens = GameObject.FindGameObjectsWithTag("Alien3");
+            foreach (GameObject g in aliens)
             {
                 Destroy(g.gameObject);
             }
@@ -236,24 +306,6 @@ public class GameController : MonoBehaviour {
         ResetAliensToKill();
         previousHeight = -100;
         player.GetComponent<Renderer>().enabled = true;
-    }
-
-    public void MuteGame()
-    {
-        //if the game was unmuted
-        if (PlayerPrefs.GetInt("IsMuted") == 0)
-        {
-            //mute the game
-            PlayerPrefs.SetInt("IsMuted", 1);
-            GetComponent<AudioSource>().mute = true;
-        }
-        //if the game was muted
-        else if (PlayerPrefs.GetInt("IsMuted") == 1)
-        {
-            //unmute the game
-            PlayerPrefs.SetInt("IsMuted", 0);
-            GetComponent<AudioSource>().mute = false;
-        }
     }
 
     private void ResetAliensToKill()

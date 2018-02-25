@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class ChangeScene : MonoBehaviour {
-
     public void ExitGame()
     {
+        PlayerPrefs.Save();
         Application.Quit();
     }
 
     public void Change(int x)
     {
+        PlayerPrefs.Save();
         StartCoroutine(ChangeLevel(x));
     }
 

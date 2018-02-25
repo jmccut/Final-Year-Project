@@ -8,14 +8,24 @@ public class InsideController : MonoBehaviour {
     public GameObject enemy;
     public GameObject boss;
     public static int KilledCount { get; set; } //counts number of enemies killed
-    public int numberOfEnemies; //number of normal enemies in level
-    public GameObject ladder;
+    public static int numberOfEnemies { get; set; } //number of normal enemies in level
     public ChangeScene change;
     public Button restart;
     public GameObject healthPack;
-
-	void Start () {
+    public Text startText;
+    public Text moneyT;
+    public Text partsT;
+    public Text hint;
+    public static List<GameObject> AliveInvaders { get; set; }
+    void Start() {
+        //-----------------------------------------------------
+        //MAKE SURE THIS IS THE RIGHT AMOUNT BEFORE SUBMITTING
         numberOfEnemies = 5;
+        //-----------------------------------------------------
+        //display start text
+        if (SceneManager.GetActiveScene().buildIndex == 2 || SceneManager.GetActiveScene().buildIndex == 4) {
+            StartCoroutine(FadeTextToZeroAlpha(4, startText));
+        }
         KilledCount = 0;
         //instantiates enemies
         for (int i = 0; i < numberOfEnemies; i++)
@@ -29,31 +39,39 @@ public class InsideController : MonoBehaviour {
             Instantiate(boss);
         }
         restart.gameObject.SetActive(false);
-	}
-
-    private void Update()
-    {
-        //if this is not the boss level
-        if (SceneManager.GetActiveScene().buildIndex != 4)
+        //if this is the first level of the ship
+        if (SceneManager.GetActiveScene().buildIndex == 2)
         {
-            //if the player kills all enemies, show ladder
-            if (KilledCount < numberOfEnemies)
+            //if this is the first time the player is playing the boss level
+            if (GameManagerS.Stage == 2)
             {
-                ladder.gameObject.SetActive(false);
+                hint.gameObject.SetActive(true);
             }
             else
             {
-                ladder.gameObject.SetActive(true);
+                hint.gameObject.SetActive(false);
             }
         }
-        else
+        AliveInvaders = new List<GameObject>();
+    }
+    private void Update()
+    {
+        moneyT.text = "£" + GameManagerS.Money;
+        partsT.text = "" + GameManagerS.Parts;
+
+        //if this is not the boss level
+        if (SceneManager.GetActiveScene().buildIndex == 4 &&
+            KilledCount == (numberOfEnemies + 1))
         {
             //if the player has killed all of the enemies as well as the boss
-            if (KilledCount == (numberOfEnemies+1))
+            GameManagerS.OnBossLevel = false;
+            //if double resources were on, turn them off
+            if (GameManagerS.PowerUps[2])
             {
-                GameManagerS.OnBossLevel = false;
-                change.Change(1);
+                GameManagerS.PowerUps[2] = false;
             }
+            change.Change(1);
+            
         }
         //if the player dies, show the restart button
         if (CharController.Dead)
@@ -79,5 +97,17 @@ public class InsideController : MonoBehaviour {
         {
             Time.timeScale = 1;
         }
+    }
+
+    public IEnumerator FadeTextToZeroAlpha(float t, Text i)
+    {
+        i.gameObject.SetActive(true);
+        i.color = new Color(i.color.r, i.color.g, i.color.b, 1);
+        while (i.color.a > 0.0f)
+        {
+            i.color = new Color(i.color.r, i.color.g, i.color.b, i.color.a - (Time.deltaTime / t));
+            yield return null;
+        }
+        i.gameObject.SetActive(false);
     }
 }

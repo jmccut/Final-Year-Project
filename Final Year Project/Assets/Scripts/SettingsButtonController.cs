@@ -24,7 +24,6 @@ public class SettingsButtonController : MonoBehaviour {
             {
                 if (b.gameObject.GetType() == typeof(Image))
                 {
-                    Debug.Log("im here");
                     b.gameObject.SetActive(true);
                 }
                 

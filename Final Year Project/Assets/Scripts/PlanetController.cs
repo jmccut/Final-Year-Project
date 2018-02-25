@@ -16,23 +16,36 @@ public class PlanetController : MonoBehaviour {
     public Sprite neptune;
     public Sprite pluto;
     public ChangeScene change;
-    
     //target for the planet movement
-    public Vector3 target = new Vector3(-87f, -25f, -0.5f);
+    public Vector3 target; 
 
     //flag to show the planet has stopped moving
     public static bool atPlanet;
 
     private void Start()
     { //set the initial planet position before movement and flag
-        transform.position = new Vector3(-200f, -25f, -0.5f);
+        
         atPlanet = false;
+        if (!gameObject.CompareTag("MapPlanet"))
+        {
+            transform.position = new Vector3(-200f, -25f, -0.5f);
+            target = new Vector3(-87f, -25f, -0.5f);
+        }
+        else
+        {
+            transform.position = new Vector3(115f, -25f, -0.5f);
+            target = new Vector3(40f, -25f, 0f);
+            if (GameManagerS.CurrentPlanet > 1)
+            {
+                ChangeSprite(GameManagerS.CurrentPlanet);
+            }
+        }
     }
 
     private void Update()
     {
         //if the stage has been cleared, begin planet approach
-        if (GameController.stageCleared && !GameController.IsRunning)
+        if (GameController.stageCleared && !GameController.IsRunning && !gameObject.CompareTag("MapPlanet"))
         {
             //changes sprite of planet to relevant one
             ChangeSprite(GameManagerS.Stage -1);
@@ -49,12 +62,15 @@ public class PlanetController : MonoBehaviour {
                 change.Change(2);
             }
         }
-
         //if the game starts running again, move the planet back at twice the speed and reset flag
-        else if (GameController.IsRunning)
+        else if (GameController.IsRunning && !gameObject.CompareTag("MapPlanet"))
         {
             transform.position = Vector3.MoveTowards(transform.position, new Vector3(-200f, -25f, -0.5f), Time.deltaTime * 25);
             atPlanet = false;
+        }
+        if (gameObject.CompareTag("MapPlanet"))
+        {
+            transform.position = Vector3.MoveTowards(transform.position, target, Time.deltaTime * 2);
         }
     }
 

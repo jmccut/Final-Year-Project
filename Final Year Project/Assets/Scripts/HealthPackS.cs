@@ -19,6 +19,7 @@ public class HealthPackS : MonoBehaviour {
         if (other.gameObject.CompareTag("Player"))
         {
             player.IncrementHealth(25);
+            SoundController.GetSound(1).Play();
             Destroy(gameObject);
         }
     }

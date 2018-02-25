@@ -1,0 +1,73 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BackgroundAI : MonoBehaviour {
+    private int rand;
+    public int damage;
+    public System.TimeSpan timeDiff;
+    private static BackgroundAI instance = null;
+    private void Awake()
+    {
+        damage = 25;
+        //used to execute awake method only once
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
+
+    private void Start()
+    {
+        //get the difference between the time now and the time the player last saved
+        timeDiff = System.DateTime.Now - GameManagerS.LastTimeSaved;
+        //call planet base damage script
+        DoDamage(timeDiff);
+    }
+
+    public void DoDamage(System.TimeSpan diff)
+    {
+        //gets total number of minutes since player last played
+        //the longer the player has been away the more damage is done
+        float mins = diff.Minutes + (diff.Hours*60);
+        for (int y = 0; y < mins/2; y++)
+        {
+            //for each base
+            for (int i = 0; i < GameManagerS.BaseLevels.Length; i++)
+            {
+                //if they have unlocked the planet
+                if (GameManagerS.Stage > (i + 1))
+                {
+                    //if there is no base on it yet
+                    if (GameManagerS.BaseLevels[i] == 0)
+                    {
+                        //1 in 10 chance of taking damage
+                        rand = Random.Range(0, 10);
+                        if (rand == 0)
+                        {
+                            //planet is dead as there is no base on it
+                            GameManagerS.BaseDamage[i] = 100;
+                        }
+                    }
+                    //if there is a base
+                    else
+                    {
+                        //the chance of attacking decreases per level
+                        rand = Random.Range(0, 10 * GameManagerS.BaseLevels[i]);
+                        if (rand == 0)
+                        {
+                            GameManagerS.BaseDamage[i] += damage;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

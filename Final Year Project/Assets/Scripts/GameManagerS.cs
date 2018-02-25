@@ -15,9 +15,21 @@ class PlayerData
     public bool OnBossLevel;
     public float Health;
     public int Money;
+    public int Parts;
     public int ShipWepLevel;
     public int BossWepLevel;
+    //ORDER : Missles, shield, triple shot
     public bool[] PowerUps;
+    //stats used for the base building feature
+    public int[] BaseDamage;
+    public int[] BaseLevels;
+    public int CurrentPlanet;
+    public DateTime LastTimeSaved;
+    //stats used for objectives feature
+    public Dictionary<int, bool> CompleteObjList;
+    public int TotalAliensKilled;
+    public int TotalPartsCollected;
+    public bool AllObjCompleted;
 }
 public class GameManagerS : MonoBehaviour
 {
@@ -26,14 +38,20 @@ public class GameManagerS : MonoBehaviour
     public static float Health { get; set; }
     public static bool OnBossLevel { get; set; }
     public static int Money { get; set; }
+    public static int Parts { get; set; }
     public static int ShipWepLevel { get; set; }
     public static int BossWepLevel { get; set; }
     public static bool[] PowerUps { get; set; }
-
-
+    public static int[] BaseDamage { get; set; }
+    public static int[] BaseLevels { set; get; }
+    public static DateTime LastTimeSaved { get; set; }
+    public static int CurrentPlanet { get; set; }
+    public static Dictionary<int, bool> CompleteObjList{get;set;}
+    public static int TotalAliensKilled { get; set; }
+    public static int TotalPartsCollected { get; set; }
+    public static bool AllObjCompleted { get; set; }
     private void Awake()
     {
-        PlayerPrefs.SetInt("IsMuted", 0);
         //keeps this object persistent through the game
         DontDestroyOnLoad(gameObject);
     }
@@ -51,9 +69,20 @@ public class GameManagerS : MonoBehaviour
         pd.Health = Health;
         pd.OnBossLevel = OnBossLevel;
         pd.Money = Money;
+        pd.Parts = Parts;
         pd.ShipWepLevel = ShipWepLevel;
         pd.BossWepLevel = BossWepLevel;
         pd.PowerUps = PowerUps;
+        pd.BaseDamage = BaseDamage;
+        pd.BaseLevels = BaseLevels;
+        pd.CurrentPlanet = CurrentPlanet;
+        pd.CompleteObjList = CompleteObjList;
+        pd.TotalAliensKilled = TotalAliensKilled;
+        pd.TotalPartsCollected = TotalPartsCollected;
+        pd.AllObjCompleted = AllObjCompleted;
+        //sets the last time saved to now
+        LastTimeSaved = DateTime.Now;
+        pd.LastTimeSaved = LastTimeSaved;
         //serialize then close
         bf.Serialize(file, pd);
         file.Close();
@@ -73,10 +102,19 @@ public class GameManagerS : MonoBehaviour
             Stage = pd.Stage;
             Health = pd.Health;
             Money = pd.Money;
+            Parts = pd.Parts;
+            CurrentPlanet = pd.CurrentPlanet;
             ShipWepLevel = pd.ShipWepLevel;
             BossWepLevel = pd.BossWepLevel;
             PowerUps = pd.PowerUps;
             OnBossLevel = pd.OnBossLevel;
+            BaseDamage = pd.BaseDamage;
+            BaseLevels = pd.BaseLevels;
+            CompleteObjList = pd.CompleteObjList;
+            LastTimeSaved = pd.LastTimeSaved;
+            TotalPartsCollected = pd.TotalPartsCollected;
+            TotalAliensKilled = pd.TotalAliensKilled;
+            AllObjCompleted = pd.AllObjCompleted;
             file.Close();
         }
     }
@@ -88,10 +126,18 @@ public class GameManagerS : MonoBehaviour
         Level = 0;
         OnBossLevel = false;
         Health = 100f;
-
+        Parts = 0;
         Money = 0;
         ShipWepLevel = 0;
         BossWepLevel = 0;
+        CurrentPlanet = 0;
         PowerUps = new bool[3];
+        BaseDamage = new int[9];
+        BaseLevels = new int[9];
+        CompleteObjList = new Dictionary<int, bool>(15);
+        LastTimeSaved = new DateTime();
+        TotalPartsCollected = 0;
+        TotalAliensKilled = 0;
+        AllObjCompleted = false;
     }
 }

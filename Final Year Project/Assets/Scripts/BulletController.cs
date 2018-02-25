@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletController : MonoBehaviour {
-    public float playerSpeed;
+    public float playerSpeed; //speed of the bullet for the player
     public static float Speed { get; set; } //holds speed of the bullets
     Rigidbody2D rb;
     private void Start()
@@ -18,6 +18,7 @@ public class BulletController : MonoBehaviour {
             //shoot the bullet left
             rb.velocity = Vector3.left * playerSpeed;
         }
+        //if enemy bullet
         else
         {
             Speed = 25;

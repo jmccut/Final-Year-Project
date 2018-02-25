@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
-
+    private AudioSource sfx;
     public Boundary boundary; //boundary of ship y-axis
     public float speed; //speed of the ship movement
     public float Health; //ship health
     public float MaxHealth;
     public Transform shotSpawn; //where the bullet will spawn
     public GameObject shot; //reference to the bullet object
+    public GameObject missile;
     private SpriteRenderer spriteRenderer; //reference to the ship sprite
     public Button restart; //reference to the restart button
     private Rigidbody2D rb;
@@ -19,29 +20,89 @@ public class PlayerController : MonoBehaviour {
     private float nextFire;
     public float fireRate;
     public Slider healthBar;
-    public GameObject zap;
+    public GameObject zap; //damage particle effect
+    public GameObject fire;
     public GameObject explosion;
-    public static int Damage { get; set; }
 
+    public static int Damage { get; set; }
+    //flags for upgrade modes
+    public static bool Invul { get; set; }
+    public Slider invulBar;
+    private float invulCount;
+    public static bool MissileMode { get; set; }
+    private float bulletCount;
+    private float maxBullets;
+    public Slider bulletBar;
+    public Material reward;
     private void Start()
     {
+        //if all objectives have been completed then set material
+        if (GameManagerS.AllObjCompleted)
+        {
+            GetComponent<SpriteRenderer>().material = reward;
+        }
         //set damage according to game manager state
         Damage = 25 * GameManagerS.ShipWepLevel;
         //sets the starting health of the player
         MaxHealth = 500;
+        invulCount = 400;
+        maxBullets = 35;
+        bulletCount = maxBullets;
+        bulletBar.value = 1;
         Health = MaxHealth;
+        sfx = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         healthBar.value = 1;
+        invulBar.value = 1;
+        StartCoroutine(RegenBullets());
+        if (GameManagerS.PowerUps[0])
+        {
+            MissileMode = true;
+        }
+        if (GameManagerS.PowerUps[1])
+        {
+            Invul = true;
+        }
     }
+    IEnumerator RegenBullets()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(0.3f);
+            if (bulletCount < maxBullets && !FZ.canFire)
+            {
+                bulletCount++;
+                bulletBar.value = bulletCount / maxBullets;
+            }
 
+        }
+    }
     private void Update()
     {
         //shoots when the game is running and the fire area is being touched
-        if (GameController.IsRunning && FZ.canFire && Time.time > nextFire)
+        if (GameController.IsRunning && FZ.canFire && Time.time > nextFire && bulletCount != 0)
         {
             nextFire = Time.time + fireRate;
             Shoot();
+        }
+        if (GameManagerS.PowerUps[0])
+        {
+            MissileMode = true;
+        }
+        else
+        {
+            MissileMode = false;
+        }
+        if (GameManagerS.PowerUps[1])
+        {
+            Invul = true;
+            invulBar.gameObject.SetActive(true);
+        }
+        else
+        {
+            Invul = false;
+            invulBar.gameObject.SetActive(false);
         }
     }
 
@@ -76,12 +137,38 @@ public class PlayerController : MonoBehaviour {
 
     public void DecrementHealth(int damage)
     { //decrease health by amount specified
-        Health -= damage;
-        healthBar.value = Health/MaxHealth;
+        if (Invul)
+        {
+            invulCount -= damage;
+            invulBar.value = invulCount / 400;
+            if(invulCount <= 0)
+            {
+                Invul = false;
+                invulBar.gameObject.SetActive(false);
+                GameManagerS.PowerUps[1] = false;
+                invulBar.value = 1;
+                invulCount = 400;
+            }
+        }
+        else
+        {
+            Health -= damage;
+            healthBar.value = Health / MaxHealth;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     { //if the wall collides with the player, kill player
+        if (collision.gameObject.CompareTag("Laser")  && GameController.IsRunning)
+        {
+            DecrementHealth(AlienController.Damage);
+            //make zap particle effect and attach it to ship
+            GameObject part = Instantiate(fire, gameObject.transform.position, Quaternion.identity);
+            (part).transform.parent = (gameObject).transform;
+            part.transform.Rotate(0f, 0f, -90f);
+            part.transform.localScale = new Vector3(10, 10, 10);
+            StartCoroutine(wait(part,2f));
+        }
         if (collision.gameObject.CompareTag("Wall") && GameController.IsRunning)
         {
             Dead();
@@ -94,7 +181,7 @@ public class PlayerController : MonoBehaviour {
             (part).transform.parent = (gameObject).transform;
             part.transform.Rotate(0f, 0f, -90f);
             part.transform.localScale = new Vector3(10, 10, 10);
-            StartCoroutine(wait(part));
+            StartCoroutine(wait(part, 0.5f));
             DecrementHealth(AlienController.Damage);
             //kills the ship if the amount of damage was enough to kill it
             if (Health <= 0)
@@ -119,6 +206,10 @@ public class PlayerController : MonoBehaviour {
                 Dead();
             }
         }
+        else if (collision.gameObject.CompareTag("Laser") && GameController.IsRunning)
+        {
+            DecrementHealth(AlienController.Damage);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -127,8 +218,21 @@ public class PlayerController : MonoBehaviour {
     }
     
     void Shoot()
-    { //makes shot
-        Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
+    { 
+        //make normal bullet if not in missle mode
+        if (!MissileMode)
+        {
+            Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
+            sfx.Play();
+            bulletCount--;
+            bulletBar.value = bulletCount / maxBullets;
+        }
+        //make missile
+        else
+        {
+            Instantiate(missile, shotSpawn.position, missile.transform.rotation);
+            SoundController.GetSound(3).Play();
+        }
     }
 
     public void Dead()
@@ -144,11 +248,22 @@ public class PlayerController : MonoBehaviour {
         GameController.IsRunning = false;
         Health = MaxHealth;
         healthBar.value = 1;
+        SoundController.GetSound(4).Play();
+        //money goes down
+        if (GameManagerS.Money > 25)
+        {
+            GameManagerS.Money -= 25;
+        }
+        else
+        {
+            GameManagerS.Money = 0;
+        }
+        
     }
 
-    IEnumerator wait(GameObject zap)
+    IEnumerator wait(GameObject zap, float secs)
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(secs);
         Destroy(zap.gameObject);
     }
 }

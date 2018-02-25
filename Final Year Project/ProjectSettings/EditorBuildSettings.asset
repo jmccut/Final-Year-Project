@@ -23,3 +23,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/End.unity
     guid: dcfec354aa481bd4198dae7d7b748d32
+  - enabled: 1
+    path: Assets/Scenes/BaseBoss.unity
+    guid: 2492788b7c66d4847a173fba2be95694

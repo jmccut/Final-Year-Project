@@ -21,16 +21,32 @@ public class InvaderController : MonoBehaviour {
     private float nextFire;
     public float fireRate;
     public int Health { get; set; }
-
+    public GameObject key;
+    private AudioSource shootingSound;
     void Start () {
+        InsideController.AliveInvaders.Add(gameObject);
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
         if (gameObject.CompareTag("Boss")){
-            Health = 200;
+            if (PlayerPrefs.GetInt("HardMode") == 0)
+            {
+                Health = 250;
+            }
+            else
+            {
+                Health = 400;
+            }
         }
         else
         {
-            Health = 100;
+            if (PlayerPrefs.GetInt("HardMode") == 0)
+            {
+                Health = 100;
+            }
+            else
+            {
+                Health = 150;
+            }
         }
         //random pause between next wander directions
         nextWander = Random.Range(2f, 6f);
@@ -45,6 +61,7 @@ public class InvaderController : MonoBehaviour {
         transform.position = hit.position;
         startPos = transform.position;
         target = GameObject.FindGameObjectWithTag("Player").transform;
+        shootingSound = GetComponent<AudioSource>();
     }
 	
 	// Update is called once per frame
@@ -100,13 +117,12 @@ public class InvaderController : MonoBehaviour {
 
     private void Fire()
     {
-        //anim.SetBool("Shooting", true);
+        shootingSound.Play();
         Instantiate(bullet, shotSpawn.position, shotSpawn.rotation);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        
         if (collision.transform.gameObject.CompareTag("Bullet"))
         {
             //takes 3 shots to kill an alien
@@ -167,8 +183,26 @@ public class InvaderController : MonoBehaviour {
 
     void Dead()
     {
+        //increment kill count, if all enemies are dead and not boss level
         InsideController.KilledCount++;
-        GameManagerS.Money += 10;
+        GameManagerS.TotalAliensKilled++; //adds to the total number of aliens killed
+        if (InsideController.KilledCount == InsideController.numberOfEnemies
+            && SceneManager.GetActiveScene().buildIndex != 4)
+        {
+            //spawn door key
+            Instantiate(key, gameObject.transform.position, Quaternion.identity);
+        }
+        //gives more money to player when hard mode enabled
+        if (PlayerPrefs.GetInt("HardMode") == 0)
+        {
+            GameManagerS.Money += 10;
+        }
+        else
+        {
+            GameManagerS.Money += 15;
+        }
+        SoundController.GetSound(0).Play();
+        InsideController.AliveInvaders.Remove(gameObject);
         Destroy(gameObject);
     }
 }

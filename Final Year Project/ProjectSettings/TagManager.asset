@@ -15,6 +15,17 @@ TagManager:
   - Boss
   - Restart
   - Alien2
+  - Invul
+  - Missile
+  - Laser
+  - Alien3
+  - LaserDestination
+  - LaserDestination2
+  - SoundController
+  - Tutorial
+  - Arrow
+  - MapPlanet
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -24,7 +35,7 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - New
   - 
   - 
   - 
