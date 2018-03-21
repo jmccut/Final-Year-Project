@@ -228,7 +228,7 @@ MonoBehaviour:
   - {fileID: 4651618921004616}
   - {fileID: 4635119207276252}
   - {fileID: 4423569108482840}
-  fireRate: 1
+  fireRate: 2
   bullet: {fileID: 1815857457258164, guid: fe8bc28f06b4a5e44a2fbb86e00981d3, type: 2}
   explosion: {fileID: 1000010826686036, guid: 312430052df95c74dabbbf24c770df80, type: 2}
 --- !u!212 &212418120747965176

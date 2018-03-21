@@ -88,7 +88,7 @@ public class MissileController : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //if it hits something other than the player
-        if (!collision.gameObject.CompareTag("Player") && !collision.gameObject.CompareTag("Untagged"))
+        if (!collision.gameObject.CompareTag("Player"))
         {
             //make explosion particle effect before destroying it and the missile
             GameObject bang = Instantiate(explosion, transform.position, Quaternion.identity);

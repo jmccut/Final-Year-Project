@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class TutorialController : MonoBehaviour {
     public bool done;
+    private int count;
 	// Use this for initialization
 	void Start () {
+        count = 0;
         done = false;
 		foreach(Transform t in transform)
         {
@@ -21,7 +23,7 @@ public class TutorialController : MonoBehaviour {
 	}
 
 	void Update () {
-        if (GameController.IsRunning && !done)
+        if (GameController.IsRunning && !done && GameManagerS.Level != 2)
         {
             Time.timeScale = 0f;
             foreach (Transform t in transform)
@@ -35,12 +37,28 @@ public class TutorialController : MonoBehaviour {
                     t.gameObject.SetActive(true);
                 }
             }
+            if (Input.touchCount > 0)
+            {
+                count++;
+                if (count >= 2)
+                {
+                    foreach (Transform t in transform)
+                    {
+                        t.gameObject.SetActive(false);
+                    }
+                    Time.timeScale = 1f;
+                    gameObject.SetActive(false);
+                    done = true;
+                }
+            }
         }
-        if(Input.touchCount > 0)
+        else if (GameManagerS.Level == 2 && GameController.IsRunning)
         {
-            Time.timeScale = 1f;
-            gameObject.SetActive(false);
-            done = true;
+            foreach (Transform t in transform)
+            {
+
+                t.gameObject.SetActive(false);
+            }
         }
 	}
 

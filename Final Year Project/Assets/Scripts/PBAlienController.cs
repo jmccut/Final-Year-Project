@@ -20,6 +20,7 @@ public class PBAlienController : MonoBehaviour {
     private AudioSource shootingSound;
     SpriteRenderer rend;
     private bool touching;
+    private bool touchingBoss;
 
     // Use this for initialization
     void Start () {
@@ -47,7 +48,7 @@ public class PBAlienController : MonoBehaviour {
             type = Type.TYPE3;
             speed = 10;
             health = 350;
-            fireRate = 4;
+            fireRate = 6;
         }
         //gets player position
         try
@@ -65,7 +66,7 @@ public class PBAlienController : MonoBehaviour {
         //shoots when the game is running and the fire area is being touched
         if (Time.time > nextFire && (type == Type.TYPE1 || type == Type.TYPE3))
         {
-            nextFire = Time.time + (fireRate - (0.35f * GameManagerS.Level));
+            nextFire = Time.time + (fireRate);
             Shoot();
         }
         if (health <= 0)
@@ -105,7 +106,7 @@ public class PBAlienController : MonoBehaviour {
                 new Vector3(playerTransform.position.x + 10, playerTransform.position.y, playerTransform.position.z),
                 Time.deltaTime * speed));
         }
-        else if (playerTransform != null && type == Type.TYPE3)
+        else if (playerTransform != null && type == Type.TYPE3 && !touchingBoss)
         {
             rb.velocity = new Vector3();
             rb.MovePosition(Vector3.MoveTowards(rb.position,
@@ -129,6 +130,7 @@ public class PBAlienController : MonoBehaviour {
         //if alien is hit by a bullet
         if (collision.CompareTag("Bullet"))
         {
+            Destroy(collision.gameObject);
             //flash red
             rend.material.color = Color.white;
             yield return new WaitForSeconds(.1f);
@@ -144,7 +146,18 @@ public class PBAlienController : MonoBehaviour {
         //if alien is hit by a missile
         else if (collision.CompareTag("Missile"))
         {
-            Dead();
+            if (type != Type.TYPE3)
+            {
+                Dead();
+            }
+            else
+            {
+                health -= PBPlayerController.Damage*2;
+                if(health<= 0)
+                {
+                    Dead();
+                }
+            }
         }
         else if (type==Type.TYPE2 && collision.CompareTag("Player") 
             && !collision.gameObject.GetComponent<PBPlayerController>().dead)
@@ -155,6 +168,11 @@ public class PBAlienController : MonoBehaviour {
         {
             flee(collision);
         }
+        else if (type == Type.TYPE3 && collision.CompareTag("Alien3"))
+        {
+            flee(collision);
+            touchingBoss = true;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -162,6 +180,10 @@ public class PBAlienController : MonoBehaviour {
         if (type == Type.TYPE1 && collision.CompareTag("Alien1"))
         {
             touching = false;
+        }
+        if (type == Type.TYPE3 && collision.CompareTag("Alien3"))
+        {
+            touchingBoss = false;
         }
     }
 

@@ -33,6 +33,7 @@ public class GameController : MonoBehaviour {
     public Text moneyT;
     public Text partsT;
     public GameObject tutorial;
+    public GameObject arrow;
 
     public static List<GameObject> AliveAliens { get; set; }
 
@@ -47,9 +48,11 @@ public class GameController : MonoBehaviour {
         //initialises game manager state for new game
         if (GameManagerS.Level == 0 && GameManagerS.Stage == 0)
         {
+            GameManagerS.LastTimeSaved = System.DateTime.Now;
             GameManagerS.Level = 1;
             GameManagerS.Stage = 1;
             GameManagerS.OnBossLevel = false;
+            GameManagerS.OnBaseBossLevel = false;
             GameManagerS.ShipWepLevel = 1;
             GameManagerS.BossWepLevel = 1;
             GameManagerS.Money = 0;
@@ -67,10 +70,27 @@ public class GameController : MonoBehaviour {
             
             tutorial.SetActive(true);
         }
+        else
+        {
+            if (GameManagerS.Stage == 1 && GameManagerS.Level == 2)
+            {
+                tutorial.SetActive(true);
+                arrow.SetActive(true);
+            }
+            else
+            {
+                tutorial.SetActive(false);
+                arrow.SetActive(false);
+            }
+        }
         //changes to boss level if the save file was on the boss
-        else if (GameManagerS.OnBossLevel)
+        if (GameManagerS.OnBossLevel)
         {
             change.Change(2);
+        }
+        if (GameManagerS.OnBaseBossLevel)
+        {
+            change.Change(6);
         }
         AliveAliens = new List<GameObject>();
     }
@@ -129,7 +149,7 @@ public class GameController : MonoBehaviour {
         //resets random wall generator
         previousHeight = -100;
         //sets objective to complete
-        if(player.GetComponent<PlayerController>().Health == 100)
+        if(player.GetComponent<PlayerController>().Health == player.GetComponent<PlayerController>().MaxHealth)
         {
             GameManagerS.CompleteObjList[4] = true;
         }
@@ -311,5 +331,10 @@ public class GameController : MonoBehaviour {
     private void ResetAliensToKill()
     {
         numAliensToKill = GameManagerS.Level * numAliensMultiplier;
+        //more aliens to kill for laser aliens as they come in pairs
+        if (GameManagerS.Stage >= 6)
+        {
+            numAliensToKill *= 2;
+        }
     }
 }

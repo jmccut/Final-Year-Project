@@ -25,7 +25,7 @@ public class UpgradeController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         //initialises prices
-		powerUpPrices = new int[] { 200, 150, 300 };
+		powerUpPrices = new int[] { 250, 200, 150 };
         shipWepPrice = 150 * GameManagerS.ShipWepLevel;
         bossWepPrice = 125 * GameManagerS.BossWepLevel;
         shipPartsPrice = 10 * GameManagerS.ShipWepLevel;
@@ -85,6 +85,7 @@ public class UpgradeController : MonoBehaviour {
                 GameManagerS.Money -= powerUpPrices[1];
                 GameManagerS.PowerUps[1] = true;
                 PlayerController.Invul = true;
+                PBPlayerController.Invul = true;
             }
         }
         else

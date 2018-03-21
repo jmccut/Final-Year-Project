@@ -13,6 +13,7 @@ class PlayerData
     public int Level;
     public int Stage;
     public bool OnBossLevel;
+    public bool OnBaseBossLevel;
     public float Health;
     public int Money;
     public int Parts;
@@ -50,6 +51,7 @@ public class GameManagerS : MonoBehaviour
     public static int TotalAliensKilled { get; set; }
     public static int TotalPartsCollected { get; set; }
     public static bool AllObjCompleted { get; set; }
+    public static bool OnBaseBossLevel { get; set; }
     private void Awake()
     {
         //keeps this object persistent through the game
@@ -72,6 +74,7 @@ public class GameManagerS : MonoBehaviour
         pd.Parts = Parts;
         pd.ShipWepLevel = ShipWepLevel;
         pd.BossWepLevel = BossWepLevel;
+        pd.OnBaseBossLevel = OnBaseBossLevel;
         pd.PowerUps = PowerUps;
         pd.BaseDamage = BaseDamage;
         pd.BaseLevels = BaseLevels;
@@ -108,6 +111,7 @@ public class GameManagerS : MonoBehaviour
             BossWepLevel = pd.BossWepLevel;
             PowerUps = pd.PowerUps;
             OnBossLevel = pd.OnBossLevel;
+            OnBaseBossLevel = pd.OnBaseBossLevel;
             BaseDamage = pd.BaseDamage;
             BaseLevels = pd.BaseLevels;
             CompleteObjList = pd.CompleteObjList;
@@ -125,6 +129,7 @@ public class GameManagerS : MonoBehaviour
         Stage = 0;
         Level = 0;
         OnBossLevel = false;
+        OnBaseBossLevel = false;
         Health = 100f;
         Parts = 0;
         Money = 0;

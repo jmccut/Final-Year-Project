@@ -16,6 +16,7 @@ public class PBGameController : MonoBehaviour
     public GameObject alien3;
     private int level;
     private int spawnRate;
+    public static bool Paused {set;get;}
     // Use this for initialization
     private void Awake()
     {
@@ -80,7 +81,17 @@ public class PBGameController : MonoBehaviour
         GameManagerS.BaseDamage[GameManagerS.CurrentPlanet] = 0;
         GameManagerS.BaseLevels[GameManagerS.CurrentPlanet] = 0;
         GameManagerS.CompleteObjList[13] = true;
+        //turns off upgrades if active
+        if (GameManagerS.PowerUps[0])
+        {
+            GameManagerS.PowerUps[0] = false;
+        }
+        if (GameManagerS.PowerUps[1])
+        {
+            GameManagerS.PowerUps[1] = false;
+        }
         change.Change(1);
+        GameManagerS.OnBaseBossLevel = false;
     }
 
     public void Pause()
@@ -89,9 +100,11 @@ public class PBGameController : MonoBehaviour
         if (Time.timeScale == 1)
         {
             Time.timeScale = 0;
+            Paused = true;
         }
         else
         {
+            Paused = false;
             Time.timeScale = 1;
         }
     }

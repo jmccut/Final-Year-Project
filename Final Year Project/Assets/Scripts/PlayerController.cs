@@ -104,6 +104,10 @@ public class PlayerController : MonoBehaviour {
             Invul = false;
             invulBar.gameObject.SetActive(false);
         }
+        if (Health <= 0)
+        {
+            Dead();
+        }
     }
 
     void FixedUpdate () {
@@ -246,8 +250,11 @@ public class PlayerController : MonoBehaviour {
         gameObject.GetComponent<Renderer>().enabled = false;
         restart.gameObject.SetActive(true);
         GameController.IsRunning = false;
-        Health = MaxHealth;
-        healthBar.value = 1;
+        if (Health == 0)
+        {
+            Health = 1;
+            healthBar.value = Health / MaxHealth;
+        }
         SoundController.GetSound(4).Play();
         //money goes down
         if (GameManagerS.Money > 25)
@@ -265,6 +272,22 @@ public class PlayerController : MonoBehaviour {
     {
         yield return new WaitForSeconds(secs);
         Destroy(zap.gameObject);
+    }
+
+    public void RestoreHealth()
+    {
+        if (Health<MaxHealth && GameManagerS.Money > Mathf.Abs(Health - MaxHealth))
+        {
+            GameManagerS.Money -= (int)MaxHealth - (int)Health;
+            Health = MaxHealth;
+            healthBar.value = 1;  
+        }
+        else if(Health<MaxHealth)
+        {
+            GameManagerS.Money = 0;
+            Health = MaxHealth;
+            healthBar.value = 1;
+        }
     }
 }
 

@@ -7,6 +7,7 @@ public class BackgroundAI : MonoBehaviour {
     public int damage;
     public System.TimeSpan timeDiff;
     private static BackgroundAI instance = null;
+    float mins;
     private void Awake()
     {
         damage = 25;
@@ -36,8 +37,9 @@ public class BackgroundAI : MonoBehaviour {
     {
         //gets total number of minutes since player last played
         //the longer the player has been away the more damage is done
-        float mins = diff.Minutes + (diff.Hours*60);
-        for (int y = 0; y < mins/2; y++)
+        mins = diff.Minutes + (diff.Hours*60);
+        
+        for (int y = 0; y < mins/4; y++)
         {
             //for each base
             for (int i = 0; i < GameManagerS.BaseLevels.Length; i++)
@@ -49,21 +51,26 @@ public class BackgroundAI : MonoBehaviour {
                     if (GameManagerS.BaseLevels[i] == 0)
                     {
                         //1 in 10 chance of taking damage
-                        rand = Random.Range(0, 10);
+                        rand = Random.Range(0, 15);
                         if (rand == 0)
                         {
                             //planet is dead as there is no base on it
                             GameManagerS.BaseDamage[i] = 100;
+                            GameManagerS.BaseLevels[i] = 0;
                         }
                     }
                     //if there is a base
                     else
                     {
                         //the chance of attacking decreases per level
-                        rand = Random.Range(0, 10 * GameManagerS.BaseLevels[i]);
+                        rand = Random.Range(0, 15 * GameManagerS.BaseLevels[i]);
                         if (rand == 0)
                         {
                             GameManagerS.BaseDamage[i] += damage;
+                            if(GameManagerS.BaseDamage[i] == 100)
+                            {
+                                GameManagerS.BaseLevels[i] = 0;
+                            }
                         }
                     }
                 }

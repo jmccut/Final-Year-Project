@@ -16,11 +16,4 @@ public class PBLaserControl : MonoBehaviour {
         rb.velocity = transform.right * speed * Time.deltaTime;
         
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Bullet"))
-        {
-            Destroy(gameObject);
-        }
-    }
 }

@@ -10,7 +10,10 @@ public class SecondAlienCollider : MonoBehaviour {
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-       StartCoroutine(parentScript.recieveTriggerEnter(name, collision));
+        if (parentScript != null)
+        {
+            StartCoroutine(parentScript.recieveTriggerEnter(name, collision));
+        }
 
     }
 

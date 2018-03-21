@@ -40,11 +40,13 @@ public class PBBulletController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!collision.CompareTag("Player") && !collision.CompareTag("Laser") && gameObject.CompareTag("Bullet"))
+        //collision for player bullet
+        if (!collision.CompareTag("Player") && !collision.CompareTag("Laser") && collision.gameObject.CompareTag("Bullet"))
         {
             Destroy(gameObject);
         }
-        if (!collision.CompareTag("Alien1") && gameObject.CompareTag("Alien Bullet"))
+        //collision for alien bullet
+        if (!collision.CompareTag("Alien1") && !collision.CompareTag("Alien Bullet") && gameObject.CompareTag("Alien Bullet"))
         {
             Destroy(gameObject);
         }

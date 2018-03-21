@@ -48,7 +48,7 @@ public class PBBombController : MonoBehaviour {
         transform.Rotate(new Vector3(0, 0, 10) * 10 * Time.deltaTime);
         if (Time.time > nextFire)
         {
-            nextFire = Time.time + (fireRate - (0.35f * GameManagerS.Level));
+            nextFire = Time.time + (fireRate);
             Shoot();
         }
     }
@@ -63,7 +63,7 @@ public class PBBombController : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Bullet"))
+        if (collision.gameObject.CompareTag("Bullet")|| collision.gameObject.CompareTag("Missile"))
         {
             //make enemy explosion and then kill the particle effect after its duration
             GameObject bang = Instantiate(explosion, transform.position, transform.rotation);
@@ -72,6 +72,9 @@ public class PBBombController : MonoBehaviour {
             Destroy(bang, totalDuration);
             GameManagerS.Money += 5;
             SoundController.GetSound(2).Play();
+            if (collision.gameObject.CompareTag("Bullet")){
+                Destroy(collision.gameObject);
+            }
             Destroy(gameObject);
         }
     }

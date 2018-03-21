@@ -50,7 +50,7 @@ public class AlienController : MonoBehaviour {
                 type = Type.TYPE2;
                 Damage = 50;
                 speed = 400 * GameManagerS.Level;
-                health = 125;
+                health = 150;
             }
             else
             {
@@ -67,14 +67,14 @@ public class AlienController : MonoBehaviour {
                 type = Type.TYPE3;
                 Damage = 1;
                 speed = 15 * GameManagerS.Level;
-                health = 75;
+                health = 250;
             }
             else
             {
                 type = Type.TYPE3;
                 Damage = 2;
                 speed = 25 * GameManagerS.Level;
-                health = 100;
+                health = 200;
             }
         }
         //gets player position
@@ -221,6 +221,7 @@ public class AlienController : MonoBehaviour {
             {
                 partnerAlien.GetComponent<AlienController>().Dead();
             }
+            Destroy(collision.gameObject);
             Dead();
         }
     }
@@ -282,6 +283,7 @@ public class AlienController : MonoBehaviour {
         {
             if (other.CompareTag("Bullet"))
             {
+                Destroy(other.gameObject);
                 //flash red
                 rend.material.color = Color.white;
                 yield return new WaitForSeconds(.1f);
@@ -298,12 +300,6 @@ public class AlienController : MonoBehaviour {
                 {
                     chase = true;
                 }
-                //destroys bullet
-                if(other!= null)
-                {
-                    Destroy(other.gameObject);
-                }
-                
             }
             else if (other.CompareTag("Missile"))
             {

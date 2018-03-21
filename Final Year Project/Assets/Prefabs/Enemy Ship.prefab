@@ -219,7 +219,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosion: {fileID: 1000010826686036, guid: 312430052df95c74dabbbf24c770df80, type: 2}
   shotSpawn: {fileID: 4596893636739666}
-  fireRate: 0.75
+  fireRate: 1.25
   shot: {fileID: 1231792732500020, guid: a8653fde7fb21fa4c989d492d0fcb77a, type: 2}
   type: 0
   health: 0
@@ -254,8 +254,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1097077883
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300012, guid: 8d18f6d2b73e89b4882fbf3bb5aedb4b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

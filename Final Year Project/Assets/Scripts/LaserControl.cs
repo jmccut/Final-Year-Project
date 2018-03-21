@@ -73,6 +73,10 @@ public class LaserControl : MonoBehaviour {
             {
                 rb.velocity = transform.forward * speed;
             }
+            if (InsideController.AliveInvaders.Count == 0)
+            {
+                rb.velocity = transform.forward * speed;
+            }
         }
         else 
         {
@@ -82,7 +86,7 @@ public class LaserControl : MonoBehaviour {
                 min = Vector3.Angle(transform.forward, player.transform.position);
                 hitObject = player;
                 //if the angle is less than 15, move towards the player
-                if (min < 20f)
+                if (min < 30f)
                 {
                     transform.position = Vector3.MoveTowards(transform.position,
                         new Vector3(hitObject.transform.position.x, transform.position.y,
@@ -95,6 +99,10 @@ public class LaserControl : MonoBehaviour {
             }
             //else shoot the bullet straight
             else
+            {
+                rb.velocity = transform.forward * speed;
+            }
+            if(InsideController.AliveInvaders.Count == 0)
             {
                 rb.velocity = transform.forward * speed;
             }

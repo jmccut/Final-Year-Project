@@ -57,7 +57,7 @@ public class PBMissileController : MonoBehaviour
         }
 
         //kills the missile once it leaves the game area
-        if (transform.position.x < -130)
+        if (transform.position.x > 60)
         {
             Destroy(gameObject);
         }
@@ -80,10 +80,10 @@ public class PBMissileController : MonoBehaviour
                 rb.MovePosition(Vector3.MoveTowards(transform.position, nearest.transform.position, (speed * 5) * Time.deltaTime));
 
             }
-            //otherwise just fire it left
+            //otherwise just fire it right
             else if (nearest == null)
             {
-                rb.velocity = -Vector3.right * (speed * 5);
+                rb.velocity = Vector3.right * (speed * 5);
             }
         }
     }
@@ -91,7 +91,7 @@ public class PBMissileController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //if it hits something other than the player
-        if (!collision.gameObject.CompareTag("Player") && !collision.gameObject.CompareTag("Untagged"))
+        if (!collision.gameObject.CompareTag("Player")&& !collision.gameObject.CompareTag("Laser") && !collision.gameObject.CompareTag("Untagged"))
         {
             //make explosion particle effect before destroying it and the missile
             GameObject bang = Instantiate(explosion, transform.position, Quaternion.identity);

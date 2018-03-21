@@ -31,10 +31,19 @@ public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
         parentName = int.Parse(transform.parent.name) - 1;
         health = maxHealth - GameManagerS.BaseDamage[parentName];
         healthBar.value = health / maxHealth;
+        //shows base sprite for after saving 
+        if(GameManagerS.BaseLevels[parentName] > 0)
+        {
+            transform.parent.transform.GetChild(0).gameObject.SetActive(true);
+        }
+        if (health <= 0)
+        {
+            Dead();
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
-    {
+    {        
         //handle interaction for different buttons
         if (isUpgrade)
         {
@@ -88,6 +97,7 @@ public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
                 //the player has clicked on an invaded planet
                 GameManagerS.CurrentPlanet = parentName;
                 change.Change(6);
+                GameManagerS.OnBaseBossLevel = true;
             }
         }
         //if the base is dead but they don't have enough money
@@ -98,6 +108,7 @@ public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
             GameManagerS.Money = 0;
             GameManagerS.CurrentPlanet = parentName;
             change.Change(6);
+            GameManagerS.OnBaseBossLevel = true;
         }
     }
 
@@ -112,7 +123,7 @@ public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
             && !dead)
         {
             //take away money
-            GameManagerS.Money -= BasePrice * GameManagerS.BaseLevels[index];
+            GameManagerS.Money -= BasePrice * (GameManagerS.BaseLevels[index] + 1);
             //level is incremented in saved array
             GameManagerS.BaseLevels[index]++;
             //if first base is built

@@ -25,6 +25,9 @@ public class PBPlayerController : MonoBehaviour
     private float bulletCount;
     private float maxBullets;
     public Slider bulletBar;
+    public static bool Invul { get; set; }
+    public Slider invulBar;
+    private float invulCount;
     public bool dead { get; set; }
     public GameObject missile;
     private bool MissileMode;
@@ -35,8 +38,10 @@ public class PBPlayerController : MonoBehaviour
         Health = MaxHealth;
         healthBar.value = 1;
         maxBullets = 35;
+        invulCount = 400;
         bulletCount = maxBullets;
         bulletBar.value = 1;
+        invulBar.value = 1;
         rb = GetComponent<Rigidbody2D>();
         sfx = GetComponent<AudioSource>();
         StartCoroutine(RegenBullets());
@@ -48,6 +53,14 @@ public class PBPlayerController : MonoBehaviour
         {
             MissileMode = false;
         }
+        if (GameManagerS.PowerUps[1])
+        {
+            Invul = true;
+        }
+        else
+        {
+            Invul = false;
+        }
     }
 
     [System.Serializable]
@@ -58,12 +71,21 @@ public class PBPlayerController : MonoBehaviour
 
     void Update()
     {
-        if (FZ.canFire && Time.time > nextFire && bulletCount!=0)
+        if (FZ.canFire && Time.time > nextFire && bulletCount!=0 && !dead && !PBGameController.Paused)
         {
             nextFire = Time.time + fireRate;
             Shoot();
         }
-        
+        if (GameManagerS.PowerUps[1])
+        {
+            Invul = true;
+            invulBar.gameObject.SetActive(true);
+        }
+        else
+        {
+            Invul = false;
+            invulBar.gameObject.SetActive(false);
+        }
     }
 
     IEnumerator RegenBullets()
@@ -119,8 +141,25 @@ public class PBPlayerController : MonoBehaviour
     { //decrease health by amount specified if not dead
         if (!dead)
         {
-            Health -= damage;
-            healthBar.value = Health / MaxHealth;
+            if (Invul)
+            {
+                invulCount -= damage;
+                invulBar.value = invulCount / 400;
+                if (invulCount <= 0)
+                {
+                    Invul = false;
+                    invulBar.gameObject.SetActive(false);
+                    GameManagerS.PowerUps[1] = false;
+                    PlayerController.Invul = false;
+                    invulBar.value = 1;
+                    invulCount = 400;
+                }
+            }
+            else
+            {
+                Health -= damage;
+                healthBar.value = Health / MaxHealth;
+            }
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
