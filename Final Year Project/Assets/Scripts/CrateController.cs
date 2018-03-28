@@ -9,6 +9,7 @@ public class CrateController : MonoBehaviour {
 
     private void Start()
     {
+        //if powerup is active
         if (GameManagerS.PowerUps[2])
         {
             //crate has double the number of random parts
@@ -23,6 +24,7 @@ public class CrateController : MonoBehaviour {
             }
             else
             {
+                //more parts on hard mode
                 parts = Random.Range(3, 7);
             }
         }
@@ -50,9 +52,19 @@ public class CrateController : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
+        //if player enters collider radius then they are near
         if (other.CompareTag("Player"))
         {
             near = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        //once they exit the collider, they are no longer near
+        if (other.CompareTag("Player"))
+        {
+            near = false;
         }
     }
 }

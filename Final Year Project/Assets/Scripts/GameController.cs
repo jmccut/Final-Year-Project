@@ -9,20 +9,21 @@ public class GameController : MonoBehaviour {
     public float wallHeightRange; //max height the wall can be
     public GameObject wall; //reference to the bottom wall prefab
     public GameObject TopWall; //reference to the top wall prefab
-    public GameObject alien; //reference to the alien to spawn
+    //references to alien prefabs
+    public GameObject alien;
     public GameObject alien2;
     public GameObject alien3;
     public GameObject alien32;
+
     public GameObject destination;
     public GameObject destination2;
-    private bool isRunning; //flag to indicate if the game is running
     public GUIController GUI; //used to enable the GUI again after the level has ended
     public Text levelText; //used to display the current level
     public static int numAliensToKill;//holds the number of aliens to kill per level
     public int numAliensMultiplier; //how much alien numbers increase over levels
     public static bool stageCleared; //flag for when a number of stages are cleared
     private int stage; //holds which stage the game is on
-    public GameObject player; //holds reference to the player so they can be revived
+    public GameObject player;
     private float previousHeight; //holds the previous height of the walls
     private float wallSpawnSpeed; //holds the speed to spawn the walls
     private float alienSpawnSpeed;
@@ -30,21 +31,17 @@ public class GameController : MonoBehaviour {
     private GameObject wallCopy;
     private GameObject TopWallCopy;
     public ChangeScene change;
+    //GUI text to update
     public Text moneyT;
     public Text partsT;
+
     public GameObject tutorial;
     public GameObject arrow;
-
+    //list of alive aliens
     public static List<GameObject> AliveAliens { get; set; }
-
-    //used to safely access running flag
     public static bool IsRunning { get; set; }
-
     private void Awake()
     {
-        //----------------------------------------
-        //MAKE SURE THESE ARE RESET BEFORE FINAL |
-        //----------------------------------------
         //initialises game manager state for new game
         if (GameManagerS.Level == 0 && GameManagerS.Stage == 0)
         {
@@ -72,6 +69,7 @@ public class GameController : MonoBehaviour {
         }
         else
         {
+            //show bouncing arrow if on levels 1 or 2
             if (GameManagerS.Stage == 1 && GameManagerS.Level == 2)
             {
                 tutorial.SetActive(true);
@@ -88,6 +86,7 @@ public class GameController : MonoBehaviour {
         {
             change.Change(2);
         }
+        //changes to base boss level if the save file was in that scene
         if (GameManagerS.OnBaseBossLevel)
         {
             change.Change(6);
@@ -96,13 +95,11 @@ public class GameController : MonoBehaviour {
     }
 
     void Start () {
-        //sets the game to: not running, level 1, stage 1 and number of aliens to kill as 5
         IsRunning = false;
-
+        //sets number of aliens to kill
         ResetAliensToKill();
-         //sets the number of aliens to kill to level up
         previousHeight = -100; //arbitrary number so that the function knows it has not been initialised
-        //WallController.speed = 17; //sets starting speed for walls
+        //sets wall and alien speeds
         wallSpawnSpeed = 0.4f;
         alienSpawnSpeed = 6f;
         middleWallSpawnSpeed = 5.5f;
@@ -115,7 +112,7 @@ public class GameController : MonoBehaviour {
         {
             LevelUp();
         }
-        //sets the text for the health HUD
+        //sets the text for the GUI
         levelText.text = "Level: " + GameManagerS.Level + "/4";
         moneyT.text = "£" + GameManagerS.Money;
         partsT.text = GameManagerS.Parts.ToString();
@@ -148,7 +145,7 @@ public class GameController : MonoBehaviour {
         ResetAliensToKill();
         //resets random wall generator
         previousHeight = -100;
-        //sets objective to complete
+        //sets objective to complete if player was not hit that level
         if(player.GetComponent<PlayerController>().Health == player.GetComponent<PlayerController>().MaxHealth)
         {
             GameManagerS.CompleteObjList[4] = true;
@@ -157,6 +154,7 @@ public class GameController : MonoBehaviour {
 
     void makeEnemy()
     { 
+        //spawns different enemies depending on the stage
         if (GameManagerS.Stage < 3)
         {
             //make standard enemy
@@ -330,6 +328,7 @@ public class GameController : MonoBehaviour {
 
     private void ResetAliensToKill()
     {
+        //more aliens to kill per level
         numAliensToKill = GameManagerS.Level * numAliensMultiplier;
         //more aliens to kill for laser aliens as they come in pairs
         if (GameManagerS.Stage >= 6)

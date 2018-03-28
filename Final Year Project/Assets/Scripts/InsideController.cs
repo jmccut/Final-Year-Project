@@ -18,10 +18,7 @@ public class InsideController : MonoBehaviour {
     public Text hint;
     public static List<GameObject> AliveInvaders { get; set; }
     void Start() {
-        //-----------------------------------------------------
-        //MAKE SURE THIS IS THE RIGHT AMOUNT BEFORE SUBMITTING
         numberOfEnemies = 5;
-        //-----------------------------------------------------
         //display start text
         if (SceneManager.GetActiveScene().buildIndex == 2 || SceneManager.GetActiveScene().buildIndex == 4) {
             StartCoroutine(FadeTextToZeroAlpha(4, startText));
@@ -56,6 +53,7 @@ public class InsideController : MonoBehaviour {
     }
     private void Update()
     {
+        //update text
         moneyT.text = "£" + GameManagerS.Money;
         partsT.text = "" + GameManagerS.Parts;
 
@@ -101,6 +99,7 @@ public class InsideController : MonoBehaviour {
 
     public IEnumerator FadeTextToZeroAlpha(float t, Text i)
     {
+        //fade text
         i.gameObject.SetActive(true);
         i.color = new Color(i.color.r, i.color.g, i.color.b, 1);
         while (i.color.a > 0.0f)

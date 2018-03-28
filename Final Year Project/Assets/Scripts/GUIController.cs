@@ -27,11 +27,13 @@ public class GUIController : MonoBehaviour {
             player.transform.localScale = new Vector3(15f, 25f, 1f);
             player.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
         }
+        //set bouncing arrow to active if on level 1 or 2
         if (GameManagerS.Stage == 1 && GameManagerS.Level == 2)
         {
             tutorial.SetActive(true);
             arrow.SetActive(true);
         }
+        //otherwise set it to false
         else
         {
             tutorial.SetActive(false);

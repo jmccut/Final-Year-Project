@@ -4,25 +4,23 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UpgradeController : MonoBehaviour {
-
+    //upgrade text
     public Text shipWepLevel;
     public Text bossWepLevel;
 
     public Text shipWepPriceT;
     public Text bossWepPriceT;
-
+    //prices for upgrades
     private int shipWepPrice;
     private int bossWepPrice;
     private int shipPartsPrice;
     private int bossPartsPrice;
-
     private int[] powerUpPrices;
-
+    //upgrade buttons
     public Button buyShip;
     public Button buyBoss;
     public Button[] powerUps;
 
-    // Use this for initialization
     void Start () {
         //initialises prices
 		powerUpPrices = new int[] { 250, 200, 150 };

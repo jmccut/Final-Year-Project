@@ -3,24 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AlienController : MonoBehaviour {
-    private Transform playerTransform; //reference to the player transform
-    private float speed; //sets the speed of the alien
-    public static int Damage { get; set; } //sets the damage the alien does on contact with the ship
+    private Transform player;
+    private float speed;
+    public static int Damage { get; set; }
     public GameObject explosion;
     public Transform shotSpawn;
-    private float nextFire;
-    public float fireRate;
+    private float nextFire; //time until next shot permitted
+    public float fireRate; //set in editor
     public GameObject shot;
     public GameObject partnerAlien;
-    public enum Type { TYPE1, TYPE2, TYPE3};
-    public int SequenceNumber; //set in editor
+    public enum Type { TYPE1, TYPE2, TYPE3}; //alien types
     public Type type;
+    public int SequenceNumber; //set in editor
     public float health;
     Rigidbody2D rb;
     private bool chase;
     private AudioSource shootingSound;
     private SpriteRenderer rend;
     void Start () {
+        //adds alien to alive list when spawned
         GameController.AliveAliens.Add(gameObject);
         rb = GetComponent<Rigidbody2D>();
         rend = GetComponent<SpriteRenderer>();
@@ -80,7 +81,7 @@ public class AlienController : MonoBehaviour {
         //gets player position
         try
         {
-            playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+            player = GameObject.FindGameObjectWithTag("Player").transform;
         }
         #pragma warning disable CS0168 
         catch (System.NullReferenceException e)
@@ -91,12 +92,12 @@ public class AlienController : MonoBehaviour {
     }
 
     void FixedUpdate()
-    { //moves enemy towards the player transform if ship is not already dead
+    { //moves enemy towards the player transform if ship is not already dead and in chase mode
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (playerTransform != null && type == Type.TYPE1 && chase && GameController.IsRunning)
+        if (player != null && type == Type.TYPE1 && chase && GameController.IsRunning)
         {
             rb.velocity = new Vector3();
-            rb.MovePosition(Vector3.MoveTowards(rb.position, playerTransform.position, Time.deltaTime * speed));
+            rb.MovePosition(Vector3.MoveTowards(rb.position, player.position, Time.deltaTime * speed));
         }
         else if (type == Type.TYPE2)
         {
@@ -117,6 +118,7 @@ public class AlienController : MonoBehaviour {
             //if they are the first of the pair
             if (SequenceNumber == 0)
             {
+                //move to the right
                 if (transform.position.x < -110)
                 {
                     transform.position = Vector3.MoveTowards(rb.position, new Vector3(-110f, 5f, 0f), Time.deltaTime * speed / 2);
@@ -124,8 +126,7 @@ public class AlienController : MonoBehaviour {
                 }
                 else
                 {
-
-
+                    //move upwards
                     if (transform.position.y < 30f)
                     {
                         transform.position = Vector3.MoveTowards(rb.position, new Vector3(-110f, 30f, 0f), Time.deltaTime * speed / 2);
@@ -133,6 +134,7 @@ public class AlienController : MonoBehaviour {
                     }
                     else
                     {
+                        //rotate laser and move to the right
                         Transform part = transform.GetChild(0);
                         Transform col = transform.GetChild(2);
                         col.transform.rotation = Quaternion.Lerp(col.transform.rotation, Quaternion.Euler(new Vector3(0f, 0f, -90f)), Time.deltaTime * 0.25f);
@@ -143,7 +145,7 @@ public class AlienController : MonoBehaviour {
                     }
                 }
             }
-            //if they are the second of the pair
+            //if they are the second of the pair, do the same but move downwards
             else
             {
                 if (transform.position.x < -110)
@@ -179,6 +181,7 @@ public class AlienController : MonoBehaviour {
         //shoots when the game is running and the fire area is being touched
         if (Time.time > nextFire && type == Type.TYPE2)
         {
+            //fires faster according to game level
             nextFire = Time.time + (fireRate - (0.35f * GameManagerS.Level));
             Shoot();
         }
@@ -186,6 +189,7 @@ public class AlienController : MonoBehaviour {
         {
             Dead();
         }
+        //if type 3 alien and one of the aliens dies, they both die
         if (partnerAlien == null && type == Type.TYPE3)
         {
             Dead();
@@ -199,9 +203,10 @@ public class AlienController : MonoBehaviour {
     }
     private IEnumerator OnTriggerEnter2D(Collider2D collision)
     {
-        //if alien is hit by a bullet
+        //if alien is hit by a bullet and isn't type 1
         if (collision.CompareTag("Bullet") && type != Type.TYPE1)
         {
+            //destroy bullet and make alien flash red
             Destroy(collision.gameObject);
             rend.material.color = Color.white;
             yield return new WaitForSeconds(.1f);
@@ -217,10 +222,12 @@ public class AlienController : MonoBehaviour {
         //if alien is hit by a missile
         else if (collision.CompareTag("Missile"))
         {
+            //if type 3, kill partner
             if (type == Type.TYPE3)
             {
                 partnerAlien.GetComponent<AlienController>().Dead();
             }
+            //kill alien
             Destroy(collision.gameObject);
             Dead();
         }
@@ -251,15 +258,16 @@ public class AlienController : MonoBehaviour {
         }
         //kill alien and remove it from the list of alive ones
         GameController.AliveAliens.Remove(gameObject);
-        SoundController.GetSound(2).Play();
+        SoundController.GetSound(2).Play(); //plays death sound
         Destroy(gameObject);
     }
 
-    //avoids gameobject called with
     public void flee(GameObject target)
     {
+        //only flee if not chasing
         if (!chase)
         {
+            //calculate and set velocity to avoid gameobject
             Vector2 desiredVelocity = (rb.transform.position - target.transform.position);
             desiredVelocity.Normalize();
             desiredVelocity *= 25f;
@@ -271,16 +279,20 @@ public class AlienController : MonoBehaviour {
 
     public IEnumerator recieveTriggerEnter(string name, Collider2D other)
     {
+        //if method called from large collider
         if(name == "Large Collider")
         {
+            //if bullet hits large collider, make alien flee it
             if (other.CompareTag("Bullet") && type == Type.TYPE1)
             {
                 chase = false;
                 flee(other.gameObject);
             }
         }
+        //if small collider
         else
         {
+            //run hit sequence
             if (other.CompareTag("Bullet"))
             {
                 Destroy(other.gameObject);
@@ -296,7 +308,7 @@ public class AlienController : MonoBehaviour {
                 {
                     Dead();
                 }
-                if (playerTransform != null)
+                if (player != null)
                 {
                     chase = true;
                 }
@@ -310,11 +322,12 @@ public class AlienController : MonoBehaviour {
 
     public void recieveTriggerExit(string name, Collider2D other)
     {
+        //if bullet exits large collider, set alien to chase again
         if(name == "Large Collider")
         {
             if (other.CompareTag("Bullet") && type == Type.TYPE1)
             {
-                if (playerTransform != null)
+                if (player != null)
                 {
                     chase = true;
                 }

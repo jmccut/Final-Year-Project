@@ -8,10 +8,10 @@ public class BulletController : MonoBehaviour {
     Rigidbody2D rb;
     private void Start()
     {
-
         rb = GetComponent<Rigidbody2D>();
         if (gameObject.CompareTag("Bullet"))
         {
+            //different speed for player bullets
             playerSpeed = 100;
             //rotate the bullet to face forwards
             transform.rotation = Quaternion.AngleAxis(90, Vector3.forward);
@@ -21,6 +21,7 @@ public class BulletController : MonoBehaviour {
         //if enemy bullet
         else
         {
+            //slower speed
             Speed = 25;
             rb.velocity = -Vector3.left * Speed;
         }
@@ -38,6 +39,7 @@ public class BulletController : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        //if it hits a wall or another bullet, kill it
         if (collision.CompareTag("Wall") || collision.CompareTag("Bullet"))
         {
             Destroy(gameObject);

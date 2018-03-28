@@ -22,12 +22,15 @@ public class CharController : MonoBehaviour
 
     private void Awake()
     {
+        //set references
         rb = GetComponent<Rigidbody>();
         sfx = GetComponent<AudioSource>();
     }
     private void Start()
     {
+        //damage changes with weapon level
         Damage = 40 * GameManagerS.BossWepLevel;
+        //starts level as invulnerable
         invulBar.value = 1;
         StartCoroutine(StartInvul());
         Dead = false;
@@ -64,18 +67,17 @@ public class CharController : MonoBehaviour
         else
         {
             anim.SetFloat("Walk", 0f);
-            
         }
-        
     }
 
     public void IncrementHealth(int bonus)
-    { //decrease health by amount specified
+    { //increase health by bonus
         GameManagerS.Health += bonus;
         if(GameManagerS.Health > MaxHealth)
         {
             GameManagerS.Health = MaxHealth;
         }
+        //update health bar
         healthBar.value = GameManagerS.Health / MaxHealth;
     }
 
@@ -93,6 +95,7 @@ public class CharController : MonoBehaviour
 
     private void Fire()
     {
+        //cannot fire while invulnerable
         if (!Invul)
         {
             //make bullet

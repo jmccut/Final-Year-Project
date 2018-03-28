@@ -34,7 +34,7 @@ class PlayerData
 }
 public class GameManagerS : MonoBehaviour
 {
-    public static int Level { get; set; } //holds current level
+    public static int Level { get; set; }
     public static int Stage { get; set; }
     public static float Health { get; set; }
     public static bool OnBossLevel { get; set; }
@@ -66,6 +66,7 @@ public class GameManagerS : MonoBehaviour
         FileStream file = File.Open(filename, FileMode.OpenOrCreate);
         //sets the level of the player data to the current level
         PlayerData pd = new PlayerData();
+        //set player data
         pd.Level = Level;
         pd.Stage = Stage;
         pd.Health = Health;
@@ -101,6 +102,7 @@ public class GameManagerS : MonoBehaviour
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Open(filename, FileMode.Open);
             PlayerData pd = (PlayerData)bf.Deserialize(file);
+            //set data from player data
             Level = pd.Level;
             Stage = pd.Stage;
             Health = pd.Health;

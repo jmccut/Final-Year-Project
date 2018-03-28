@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+//SCRIPT TAKEN FROM CE318 LAB SESSION WITH PERMISSION OF PROF DIEGO PEREZ
 public class FaderScript : MonoBehaviour {
 
 	//texture that will overlay the screen.

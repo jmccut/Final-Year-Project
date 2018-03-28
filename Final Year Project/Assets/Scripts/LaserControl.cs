@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class LaserControl : MonoBehaviour {
-    public float speed; //holds speed of the bullet
+    public float speed;
     Rigidbody rb;
-    //private Vector3 velocity;
-    //private Vector3 oldPosition;
     private Vector3 direction;
     private float min;
     private GameObject hitObject;

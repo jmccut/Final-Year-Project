@@ -5,12 +5,12 @@ using UnityEngine;
 public class BackgroundAI : MonoBehaviour {
     private int rand;
     public int damage;
-    public System.TimeSpan timeDiff;
+    public System.TimeSpan timeDiff; 
     private static BackgroundAI instance = null;
     float mins;
     private void Awake()
     {
-        damage = 25;
+        damage = 25; //damage ai does
         //used to execute awake method only once
         if (instance == null)
         {
@@ -36,9 +36,8 @@ public class BackgroundAI : MonoBehaviour {
     public void DoDamage(System.TimeSpan diff)
     {
         //gets total number of minutes since player last played
-        //the longer the player has been away the more damage is done
         mins = diff.Minutes + (diff.Hours*60);
-        
+        //the longer the player has been away the more damage is done
         for (int y = 0; y < mins/4; y++)
         {
             //for each base

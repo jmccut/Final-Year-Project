@@ -7,6 +7,7 @@ public class HealthPackS : MonoBehaviour {
     public CharController player;
     private void Start()
     {
+        //spawn in random location on navmesh
         Vector3 randomDirection = Random.insideUnitSphere * 25f;
         randomDirection += transform.position;
         NavMeshHit hit;
@@ -16,6 +17,7 @@ public class HealthPackS : MonoBehaviour {
     }
     private void OnTriggerEnter(Collider other)
     {
+        //if player hits health pack, increment player health and play sound
         if (other.gameObject.CompareTag("Player"))
         {
             player.IncrementHealth(25);

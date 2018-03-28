@@ -7,16 +7,17 @@ public class SettingsController : MonoBehaviour {
     private bool lastTouched; //holds the flag so the menu button either creates or destroys buttons
     public Toggle hardMode;
     public Toggle muted;
-    private GameObject gc;
+    private GameObject gc; //game controller reference
 
     void Start () {
         gc = GameObject.FindGameObjectWithTag("GameController");
         lastTouched = true;
+        //do not show settings buttons on start
         foreach (Transform b in transform)
         {
             b.gameObject.SetActive(false);
         }
-
+        //sets toggles and preferences
         if (PlayerPrefs.GetInt("HardMode") == 1)
         {
             hardMode.isOn = true;

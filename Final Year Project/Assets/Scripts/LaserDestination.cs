@@ -8,10 +8,11 @@ public class LaserDestination : MonoBehaviour {
     public Transform part2;
     public GameObject alien;
     public bool go;
-    // Use this for initialization
+
     private void Start()
     {
         go = false;
+        //set alien partners
         if(alien.GetComponent<AlienController>().SequenceNumber == 0)
         {
             part = alien.transform.GetChild(0);
@@ -23,14 +24,16 @@ public class LaserDestination : MonoBehaviour {
             part = alien.GetComponent<AlienController>().partnerAlien.transform.GetChild(0);
         }
     }
-    // Update is called once per frame
+
     void Update () {
         if (alien != null)
         {
+            //if they have reached top of the screen, they can move
             if (alien.transform.position.y > 29f || alien.transform.position.y < -29f)
             {
                 go = true;
             }
+            //move to the right
             if (gameObject.CompareTag("LaserDestination") && go)
             {
                 transform.position = Vector3.MoveTowards(transform.position, part.position, 60f * Time.deltaTime);

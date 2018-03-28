@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ExtendedLaser : MonoBehaviour {
-    public static bool Rotate { get; set; }
+    public static bool Rotate { get; set; } //flag to indicate if collider has rotated
     private LineRenderer lr;
+    //gameobjects that move the way in which the lasers rotate
     public Transform destination;
     public Transform destination2;
 
-    // Use this for initialization
     void Start()
     {
         lr = GetComponent<LineRenderer>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!Rotate)
@@ -25,6 +24,7 @@ public class ExtendedLaser : MonoBehaviour {
         }
         else
         {
+            //rotate laser by following gameobjects
             if(transform.parent.GetComponent<AlienController>().SequenceNumber == 1)
             {
                 lr.SetPosition(0, transform.position + new Vector3(-5f, 4.5f, 0));

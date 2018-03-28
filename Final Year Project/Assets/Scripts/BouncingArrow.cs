@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class BouncingArrow : MonoBehaviour {
     //script to make tutorial arrow bounce up and down
-
     float origin;
     private void Start()
     {

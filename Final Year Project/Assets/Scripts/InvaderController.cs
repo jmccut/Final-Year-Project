@@ -24,9 +24,11 @@ public class InvaderController : MonoBehaviour {
     public GameObject key;
     private AudioSource shootingSound;
     void Start () {
+        //add alien to alive list
         InsideController.AliveInvaders.Add(gameObject);
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
+        //set health for boss
         if (gameObject.CompareTag("Boss")){
             if (PlayerPrefs.GetInt("HardMode") == 0)
             {
@@ -37,8 +39,10 @@ public class InvaderController : MonoBehaviour {
                 Health = 400;
             }
         }
+        //normal alien
         else
         {
+            //aliens have more health in hard mode
             if (PlayerPrefs.GetInt("HardMode") == 0)
             {
                 Health = 100;
@@ -66,12 +70,10 @@ public class InvaderController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        timer += Time.deltaTime;
-        //agent.SetDestination(player.transform.position);
-
+        timer += Time.deltaTime; //adds time since last update to timer to keep track of when next wander is
+        //if in chase state
         if (state.Equals(State.CHASE) && target != null)
         {
-
             //enemy follows player
             agent.SetDestination(target.position);
             //if the enemy is within a distance of the player, and they can see them and this is an invader enemy, shoot them
@@ -79,6 +81,7 @@ public class InvaderController : MonoBehaviour {
                 Physics.Linecast(shotSpawn.transform.forward, target.transform.position) && 
                 gameObject.CompareTag("Invader"))
             {
+                //if enough time has passed since last fire
                 if (Time.time > nextFire)
                 {
                     anim.SetBool("Shooting", true);
@@ -98,6 +101,7 @@ public class InvaderController : MonoBehaviour {
                     anim.SetBool("Shooting", false);
                 }
             }
+            //do not slow down near enemy
             agent.autoBraking = false;
         }
         //if the enemy is wandering and the time before the next wander has elapsed
@@ -105,9 +109,11 @@ public class InvaderController : MonoBehaviour {
         {
             Wander();
             timer = 0f;
+            //random time till next wander
             nextWander = Random.Range(2f, 6f);
             agent.autoBraking = true;
         }
+        //if player dies, go back to wandering
         else if(target == null)
         {
             anim.SetBool("Shooting", false);
@@ -117,12 +123,14 @@ public class InvaderController : MonoBehaviour {
 
     private void Fire()
     {
+        //make bullet
         shootingSound.Play();
         Instantiate(bullet, shotSpawn.position, shotSpawn.rotation);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        //if hit by bullet
         if (collision.transform.gameObject.CompareTag("Bullet"))
         {
             //takes 3 shots to kill an alien
@@ -131,6 +139,7 @@ public class InvaderController : MonoBehaviour {
             {
                 Dead();
             }
+            //chase
             state = State.CHASE;
         }
     }
@@ -174,6 +183,7 @@ public class InvaderController : MonoBehaviour {
             {
                 state = State.CHASE;
             }
+            //if in boss level, chase if near even if not in line of sight
             else if (SceneManager.GetActiveScene().buildIndex == 4)
             {
                 state = State.CHASE;
@@ -201,6 +211,7 @@ public class InvaderController : MonoBehaviour {
         {
             GameManagerS.Money += 15;
         }
+        //play death sound and remove from alive list
         SoundController.GetSound(0).Play();
         InsideController.AliveInvaders.Remove(gameObject);
         Destroy(gameObject);
