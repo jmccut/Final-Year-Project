@@ -250,7 +250,7 @@ public class PlayerController : MonoBehaviour {
         gameObject.GetComponent<Renderer>().enabled = false;
         restart.gameObject.SetActive(true);
         GameController.IsRunning = false;
-        if (Health == 0)
+        if (Health <= 0)
         {
             Health = 1;
             healthBar.value = Health / MaxHealth;
