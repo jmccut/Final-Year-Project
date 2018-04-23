@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class FireZoneScript : MonoBehaviour, IPointerDownHandler, IPointerExitHandler {
-    public bool canFire;
+    public bool canFire; //flag to indicate if player can fire
 
-    //if touching left side of screen, set flag to true
+    //if touching left side of screen
     public void OnPointerDown(PointerEventData eventData)
     {
         canFire = true;

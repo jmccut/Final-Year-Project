@@ -7,7 +7,7 @@ public class BouncingArrow : MonoBehaviour {
     float origin;
     private void Start()
     {
-        //saves the y position so it does not change
+        //saves the starting y position to ocilate from
         origin = transform.position.y;
     }
     void Update () {

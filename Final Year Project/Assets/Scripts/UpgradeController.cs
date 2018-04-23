@@ -7,7 +7,6 @@ public class UpgradeController : MonoBehaviour {
     //upgrade text
     public Text shipWepLevel;
     public Text bossWepLevel;
-
     public Text shipWepPriceT;
     public Text bossWepPriceT;
     //prices for upgrades
@@ -24,11 +23,14 @@ public class UpgradeController : MonoBehaviour {
     void Start () {
         //initialises prices
 		powerUpPrices = new int[] { 250, 200, 150 };
+        //prices of upgrades scale by the current level
         shipWepPrice = 150 * GameManagerS.ShipWepLevel;
         bossWepPrice = 125 * GameManagerS.BossWepLevel;
         shipPartsPrice = 10 * GameManagerS.ShipWepLevel;
         bossPartsPrice = 10 * GameManagerS.BossWepLevel;
-        //if the game starts with the player already on the max levels then don't show buy buts
+
+        //if the game starts with the player already on the max level
+        //of upgrade then don't show the upgrade buttons
         if(GameManagerS.ShipWepLevel == 3)
         {
             buyShip.gameObject.SetActive(false);
@@ -39,16 +41,16 @@ public class UpgradeController : MonoBehaviour {
         }
 	}
 	
-	// Update is called once per frame
+    //Update is called once per frame
 	void Update () {
-        //update GUI text
+        //update text to show upgrade levels & prices
         shipWepLevel.text = "Level " + GameManagerS.ShipWepLevel;
         bossWepLevel.text = "Level " + GameManagerS.BossWepLevel;
 
         shipWepPriceT.text = "£" + shipWepPrice + "+" + shipPartsPrice + " Parts";
         bossWepPriceT.text = "£" + bossWepPrice + "+" + bossPartsPrice + " Parts";
 
-        //highlights powerup buttons according to static game manager list
+        //highlights active powerup buttons green according to static game manager list
         for(int i = 0; i < GameManagerS.PowerUps.Length; i++)
         {
             if (GameManagerS.PowerUps[i])
@@ -70,6 +72,7 @@ public class UpgradeController : MonoBehaviour {
             //if player has enough money
             if (GameManagerS.Money >= powerUpPrices[0] && !PlayerController.MissileMode)
             {
+                //activate power-up flags and decrement money
                 GameManagerS.PowerUps[0] = true;
                 GameManagerS.Money -= powerUpPrices[0];
                 PlayerController.MissileMode = true;
@@ -102,17 +105,18 @@ public class UpgradeController : MonoBehaviour {
         //buys different upgrade depending on the button clicked
         if(but.gameObject.name == "BuyShip")
         {
-            //if player has enough money
+            //if player has enough money and weapon parts
             if(GameManagerS.Money >= shipWepPrice && GameManagerS.Parts >= shipPartsPrice)
             {
-                //deduct money, increment wep level, make the price higher for the next lvl and change damage
+                //deduct money/parts, increment wep level, make the price higher for the next lvl and change damage
                 GameManagerS.Money -= shipWepPrice;
                 GameManagerS.Parts -= shipPartsPrice;
                 GameManagerS.ShipWepLevel++;
                 shipWepPrice = 150 * GameManagerS.ShipWepLevel;
                 shipPartsPrice = 10 * GameManagerS.ShipWepLevel;
                 PlayerController.Damage = 25 * GameManagerS.ShipWepLevel;
-                //if the level is now 3, don't show the buy button anymore
+
+                //if the level of the weapon is now 3, don't show the buy button anymore
                 if(GameManagerS.ShipWepLevel == 3)
                 {
                     but.gameObject.SetActive(false);

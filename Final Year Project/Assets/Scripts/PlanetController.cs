@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlanetController : MonoBehaviour {
 
-    //the following hold the sprites for the planets
+    //the following holds the sprites for the planets
     public Sprite mercury;
     public Sprite venus;
     public Sprite earth;
@@ -23,18 +23,26 @@ public class PlanetController : MonoBehaviour {
     public static bool atPlanet;
 
     private void Start()
-    { //set the initial planet position before movement and flag
-        
+    {
         atPlanet = false;
+        //since this script is used by 2 different objects in different scene, i need to differentiate:
+
+        //if this is a planet that appears before the boss level
         if (!gameObject.CompareTag("MapPlanet"))
         {
+            //set position and target position to move to
             transform.position = new Vector3(-200f, -25f, -0.5f);
             target = new Vector3(-87f, -25f, -0.5f);
+            //changes sprite of planet to relevant one
+            ChangeSprite(GameManagerS.Stage - 1);
         }
+        //if this is a planet object that appears in the planet invasion scene
         else
         {
+            //set current and target positions
             transform.position = new Vector3(115f, -25f, -0.5f);
             target = new Vector3(40f, -25f, 0f);
+            //change to the correct sprite based on which planet has been invaded
             if (GameManagerS.CurrentPlanet > 1)
             {
                 ChangeSprite(GameManagerS.CurrentPlanet);
@@ -44,12 +52,9 @@ public class PlanetController : MonoBehaviour {
 
     private void Update()
     {
-        //if the stage has been cleared, begin planet approach
+        //if the stage has been cleared, begin moving planet into scene
         if (GameController.stageCleared && !GameController.IsRunning && !gameObject.CompareTag("MapPlanet"))
         {
-            //changes sprite of planet to relevant one
-            ChangeSprite(GameManagerS.Stage -1);
-
             //moves the planet to come into view when instantiated
             transform.position = Vector3.MoveTowards(transform.position, target, Time.deltaTime * 10);
 
@@ -59,15 +64,16 @@ public class PlanetController : MonoBehaviour {
                 GameController.stageCleared = false;
                 atPlanet = true;
                 GameManagerS.OnBossLevel = true;
-                change.Change(2);
+                change.Change(2); //change to boss level
             }
         }
-        //if the game starts running again, move the planet back at twice the speed and reset flag
+        //if the game starts running again, move the planet back the original position
         else if (GameController.IsRunning && !gameObject.CompareTag("MapPlanet"))
         {
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(-200f, -25f, -0.5f), Time.deltaTime * 25);
+            transform.position = new Vector3(-200f, -25f, -0.5f);
             atPlanet = false;
         }
+        //move towards target if planet invasion planet
         if (gameObject.CompareTag("MapPlanet"))
         {
             transform.position = Vector3.MoveTowards(transform.position, target, Time.deltaTime * 2);
@@ -75,7 +81,7 @@ public class PlanetController : MonoBehaviour {
     }
 
     public void ChangeSprite(int stageNum)
-    { //changes sprite and scale of planet based on what planet we're approaching
+    { //changes sprite and scale of planet based on index given as argument
         switch (stageNum)
         {
             case 1:

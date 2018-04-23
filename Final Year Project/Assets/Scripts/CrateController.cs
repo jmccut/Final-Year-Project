@@ -17,11 +17,13 @@ public class CrateController : MonoBehaviour {
         }
         else
         {
+            //if normal mode
             if (PlayerPrefs.GetInt("HardMode") == 0)
             {
                 //crate has random number of parts
                 parts = Random.Range(1, 5);
             }
+            //if hard mode
             else
             {
                 //more parts on hard mode
@@ -35,7 +37,7 @@ public class CrateController : MonoBehaviour {
         //if the player touches the screen whilst near this crate
         if (Input.touchCount == 1 && near)
         {
-            //casts ray from touch point
+            //casts ray from location of touch on the screen
             Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
             RaycastHit hit;
             //if the ray hits a collider and is this gameobject

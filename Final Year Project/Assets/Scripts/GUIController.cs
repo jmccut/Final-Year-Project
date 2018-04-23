@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GUIController : MonoBehaviour {
+    //references
     public GameObject player;
     public GameObject arrow;
     public GameObject tutorial;
+
     public void DisableCanvas()
-    { //disables each child of the GUI except health which is needed during the game
+    { //disables each child of the GUI except health, shield and tutorial which is needed during the game
         foreach (Transform child in transform)
         {
             if (!child.CompareTag("Health") && !child.CompareTag("Zone") && !child.CompareTag("Invul") && !child.CompareTag("Tutorial"))
@@ -20,6 +22,7 @@ public class GUIController : MonoBehaviour {
     public IEnumerator EnableCanvas()
     { //waits until all wall objects have left the scene before showing GUI
         yield return new WaitUntil(() => GameObject.FindGameObjectWithTag("Wall") == null);
+        //enable all gui components
         foreach (Transform child in transform)
         {
             child.gameObject.SetActive(true);

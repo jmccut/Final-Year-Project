@@ -8,7 +8,6 @@ public class LadderScript : MonoBehaviour {
     private AudioSource sound;
     private void Start()
     {
-        //get sound
         sound = GetComponent<AudioSource>();
     }
     private void OnTriggerEnter(Collider other)
@@ -16,7 +15,7 @@ public class LadderScript : MonoBehaviour {
         //if the player is on the ladder and has the key
         if (other.CompareTag("Player") && CharController.GotKey)
         {
-            //set ladder sprite to open and make sound
+            //set ladder sprite to open version of sprite and make sound
             gameObject.GetComponent<MeshRenderer>().material = ladder;
             sound.Play();
             //change to different level depending on current level

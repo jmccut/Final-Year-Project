@@ -6,30 +6,39 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class InvaderController : MonoBehaviour {
-    public Transform target;
-    NavMeshAgent agent;
-    public enum State { CHASE, WANDER }; //holds enemy states
-    public State state; //current enemy state
+    //alien states
+    public enum State { CHASE, WANDER }; 
+    public State state; 
+    //stats
     public float nextWander; //time until next wander position
     private float timer; //timer used to check if it is time to find next wander pos
+    private float nextFire;
+    public float fireRate;
+    public int Health { get; set; }
     private Vector3 destination; //holds the destination of the wander
     public float pointRadius; //radius in which enemy can find a point to travel to
+    //references
     Animator anim;
     private Vector3 startPos;
     public GameObject bullet;
     public Transform shotSpawn;
-    private float nextFire;
-    public float fireRate;
-    public int Health { get; set; }
+    public Transform target;
+    NavMeshAgent agent;
     public GameObject key;
     private AudioSource shootingSound;
+
     void Start () {
         //add alien to alive list
         InsideController.AliveInvaders.Add(gameObject);
+        //set references
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
+        shootingSound = GetComponent<AudioSource>();
+        target = GameObject.FindGameObjectWithTag("Player").transform;
+
         //set health for boss
         if (gameObject.CompareTag("Boss")){
+            //more health on hard mode
             if (PlayerPrefs.GetInt("HardMode") == 0)
             {
                 Health = 250;
@@ -57,15 +66,16 @@ public class InvaderController : MonoBehaviour {
         timer = nextWander;
         state = State.WANDER; //enemies start in wander state
 
-        //sets a random start position on the nav mesh
+        //get random point in a 25 point radius
         Vector3 randomDirection = Random.insideUnitSphere * 25f;
+        //add it to the default position
         randomDirection += transform.position;
+        //find where on the navmesh it is closest to
         NavMeshHit hit;
         NavMesh.SamplePosition(randomDirection, out hit, 25f, 1);
+        //set position to this position
         transform.position = hit.position;
         startPos = transform.position;
-        target = GameObject.FindGameObjectWithTag("Player").transform;
-        shootingSound = GetComponent<AudioSource>();
     }
 	
 	// Update is called once per frame
@@ -76,7 +86,7 @@ public class InvaderController : MonoBehaviour {
         {
             //enemy follows player
             agent.SetDestination(target.position);
-            //if the enemy is within a distance of the player, and they can see them and this is an invader enemy, shoot them
+            //if the enemy is within a distance of the player, they can see them and this is an invader enemy; shoot them
             if (Vector3.Distance(transform.position, target.position) < 4f && 
                 Physics.Linecast(shotSpawn.transform.forward, target.transform.position) && 
                 gameObject.CompareTag("Invader"))
@@ -92,6 +102,7 @@ public class InvaderController : MonoBehaviour {
             else
             {
                 //if this is the boss enemy and they are a certain distance away, do shoot animation but not shoot
+                //this is because the animation looks like a melee attack when there is no gun
                 if (gameObject.CompareTag("Boss") && Vector3.Distance(transform.position, target.position) < 1.5f)
                 {
                     anim.SetBool("Shooting", true);
@@ -101,12 +112,13 @@ public class InvaderController : MonoBehaviour {
                     anim.SetBool("Shooting", false);
                 }
             }
-            //do not slow down near enemy
+            //do not slow down near player when chasing
             agent.autoBraking = false;
         }
         //if the enemy is wandering and the time before the next wander has elapsed
         else if (state.Equals(State.WANDER) && nextWander <= timer)
         {
+            //wander and reset timer
             Wander();
             timer = 0f;
             //random time till next wander
@@ -196,6 +208,7 @@ public class InvaderController : MonoBehaviour {
         //increment kill count, if all enemies are dead and not boss level
         InsideController.KilledCount++;
         GameManagerS.TotalAliensKilled++; //adds to the total number of aliens killed
+        //if this was the last alien to die
         if (InsideController.KilledCount == InsideController.numberOfEnemies
             && SceneManager.GetActiveScene().buildIndex != 4)
         {

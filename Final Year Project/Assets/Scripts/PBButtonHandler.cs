@@ -6,18 +6,23 @@ using UnityEngine.UI;
 
 public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
 {
+    //stats
     private int BasePrice;
     private int damage;
     private int health;
     private int maxHealth;
+    private int parentName; //index of planet button refers to
+    //references
     public Slider healthBar;
     public Text levelText;
-    private bool dead;
     public ChangeScene change;
-    //assigns the button
+    //differentiates between upgrade and repair button
+    //this is because this script is attached to either object
     private bool isUpgrade;
     private bool isRepair;
-    private int parentName;
+    //is the planet base dead
+    private bool dead;
+
     void Start()
     {
         //sets flag depending on which button this script is attached to
@@ -26,32 +31,38 @@ public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
         //sets base price of an upgrade to a planet base level
         BasePrice = 120;
         maxHealth = 100;
-        //to identify the planet index to be upgraded, im using the names which i have
+        //to identify the planet index to be upgraded, im using the names of the objects which i have
         //numbered from 1-9
         parentName = int.Parse(transform.parent.name) - 1;
+        //set planet health
         health = maxHealth - GameManagerS.BaseDamage[parentName];
         healthBar.value = health / maxHealth;
-        //shows base sprite for after saving 
+        //shows base sprite on the planet if game file already had planets with bases on
         if(GameManagerS.BaseLevels[parentName] > 0)
         {
             transform.parent.transform.GetChild(0).gameObject.SetActive(true);
         }
+        //if game loads with health at 0, make the planet dead
         if (health <= 0)
         {
             Dead();
         }
     }
 
+    //when touch begins
     public void OnPointerClick(PointerEventData eventData)
     {        
-        //handle interaction for different buttons
+        //if player touches upgrade button
         if (isUpgrade)
         {
+            //call upgrade method on this planet
             Upgrade(parentName);
             
         }
+        //if player touches repair button
         else if(isRepair)
         {
+            //call repair method on this planet
             Repair(parentName);
         }
 
@@ -68,6 +79,7 @@ public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
         {
             transform.parent.GetComponent<SpriteRenderer>().color = Color.grey;
         }
+
         //update level text and health bar
         levelText.text = "Level : " + GameManagerS.BaseLevels[parentName];
         health = maxHealth - GameManagerS.BaseDamage[parentName];
@@ -80,7 +92,7 @@ public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
 
     public void Repair(int index)
     {
-        //if the player has 5*damage money and there is actually damage 
+        //if the player has enough money and there is actually damage 
         //and they have unlocked the planet
         if (GameManagerS.Money >= 5 * (GameManagerS.BaseDamage[index] + 1)
             && GameManagerS.BaseDamage[index] != 0
@@ -92,9 +104,10 @@ public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
             GameManagerS.BaseDamage[index] = 0;
             //sets objective to true
             GameManagerS.CompleteObjList[8] = true;
+            //if the planet was on full damage
             if (dead)
             {
-                //the player has clicked on an invaded planet
+                //set this to the current planet being invaded and change scene
                 GameManagerS.CurrentPlanet = parentName;
                 change.Change(6);
                 GameManagerS.OnBaseBossLevel = true;
@@ -104,8 +117,9 @@ public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
         else if (5 * (GameManagerS.BaseDamage[index] + 1) > GameManagerS.Money 
             && dead && GameManagerS.BaseDamage[index] != 0 && GameManagerS.Stage > index + 1)
         {
+            //reset damage, change scene and take all money
             GameManagerS.BaseDamage[index] = 0;
-            GameManagerS.Money = 0;
+            GameManagerS.Money = 0; 
             GameManagerS.CurrentPlanet = parentName;
             change.Change(6);
             GameManagerS.OnBaseBossLevel = true;
@@ -115,7 +129,6 @@ public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
     public void Upgrade(int index)
     {
         //if the player has enough money for the upgrade
-        //which is the base price of 100 multiplied by the current level of the base
         //and if the base has not already reached its max level which is 3
         if (GameManagerS.Money >= BasePrice * (GameManagerS.BaseLevels[index] + 1)
             && GameManagerS.BaseLevels[index] != 3
@@ -126,7 +139,7 @@ public class PBButtonHandler : MonoBehaviour, IPointerClickHandler
             GameManagerS.Money -= BasePrice * (GameManagerS.BaseLevels[index] + 1);
             //level is incremented in saved array
             GameManagerS.BaseLevels[index]++;
-            //if first base is built
+            //if this is the first level
             if (GameManagerS.BaseLevels[index] == 1)
             {
                 //set base sprite to active

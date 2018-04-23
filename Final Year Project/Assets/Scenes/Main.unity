@@ -7710,20 +7710,20 @@ MonoBehaviour:
   speed: 50
   Health: 0
   MaxHealth: 0
+  fireRate: 0.25
   shotSpawn: {fileID: 598401530}
-  shot: {fileID: 1506847863824144, guid: 6db150bbb3774c648adc4aad207ff73a, type: 2}
-  missile: {fileID: 1748321382185918, guid: 276e6a637bf8ed74d89b6eda7ef47767, type: 2}
   restart: {fileID: 1162546622}
   MZ: {fileID: 2020688302}
   FZ: {fileID: 1704249221}
-  fireRate: 0.25
   healthBar: {fileID: 1225695963}
+  bulletBar: {fileID: 799633249}
+  reward: {fileID: 2100000, guid: 7bc0a74531f566d4da09bf6746488df1, type: 2}
   zap: {fileID: 1000013285955420, guid: f2746ecdf91f3ef4ea1bd22d8e19f9e8, type: 2}
   fire: {fileID: 1000012826572674, guid: 6a2d4546cffca1c4d93e0b7ea62a17a4, type: 2}
   explosion: {fileID: 1000013063239222, guid: 843695ef5e6d39f458b99e399ccc09b1, type: 2}
+  shot: {fileID: 1506847863824144, guid: 6db150bbb3774c648adc4aad207ff73a, type: 2}
+  missile: {fileID: 1748321382185918, guid: 276e6a637bf8ed74d89b6eda7ef47767, type: 2}
   invulBar: {fileID: 657333649}
-  bulletBar: {fileID: 799633249}
-  reward: {fileID: 2100000, guid: 7bc0a74531f566d4da09bf6746488df1, type: 2}
 --- !u!1 &748918277
 GameObject:
   m_ObjectHideFlags: 0
@@ -22281,7 +22281,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56e0068eb89c5864bb8c9f87bfbdc50a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallHeightRange: 30
+  maxWallHeight: 30
+  numAliensMultiplier: 4
   wall: {fileID: 1322949581360780, guid: be65987cca1b3c348bbd7a4c175304af, type: 2}
   TopWall: {fileID: 1322949581360780, guid: 5ee1506a944545d41bab8b01dcb0a042, type: 2}
   alien: {fileID: 1485099616268686, guid: 395ea254af1adc94aad296030b4c2451, type: 2}
@@ -22292,15 +22293,14 @@ MonoBehaviour:
     type: 2}
   destination2: {fileID: 1893693994609776, guid: f0704ac08fcb9a3408067c52c7e07e4d,
     type: 2}
-  GUI: {fileID: 1998102258}
-  levelText: {fileID: 1762226893}
-  numAliensMultiplier: 4
+  tutorial: {fileID: 717108363}
+  tutorialArrow: {fileID: 263423469}
   player: {fileID: 743133948}
+  GUI: {fileID: 1998102258}
   change: {fileID: 2077236844}
   moneyT: {fileID: 899041158}
   partsT: {fileID: 670255696}
-  tutorial: {fileID: 717108363}
-  arrow: {fileID: 263423469}
+  levelText: {fileID: 1762226893}
 --- !u!4 &2023568036
 Transform:
   m_ObjectHideFlags: 0

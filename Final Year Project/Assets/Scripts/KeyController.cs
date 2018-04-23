@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class KeyController : MonoBehaviour {
     void Update () {
-        //make key spin
+        //make key spin at set speed
         transform.Rotate(Vector3.up * Time.deltaTime * 50f, Space.World);
 	}
 

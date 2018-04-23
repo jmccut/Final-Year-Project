@@ -15,6 +15,7 @@ public class ChangeScene : MonoBehaviour {
 
     public void Change(int x)
     {
+        //saves player preferences and changes scene
         PlayerPrefs.Save();
         StartCoroutine(ChangeLevel(x));
     }

@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class PBBulletController : MonoBehaviour
 {
-    public float playerSpeed; //speed of the bullet for the player
-    public static float Speed { get; set; } //holds speed of the bullets
+    //this script is used by player and alien bullets and so require different speeds and movements
+    public float playerSpeed; //player speed
+    public static float Speed { get; set; } //alien bullet speed
     Rigidbody2D rb;
     private void Start()
     {
-
         rb = GetComponent<Rigidbody2D>();
+        //if this is the player bullet
         if (gameObject.CompareTag("Bullet"))
         {
             playerSpeed = 100;
@@ -22,6 +23,7 @@ public class PBBulletController : MonoBehaviour
         //if enemy bullet
         else
         {
+            //set rotation, speed and velocity
             Speed = 25;
             transform.rotation = Quaternion.AngleAxis(90, Vector3.forward);
             rb.velocity = Vector3.left * Speed;
@@ -32,7 +34,8 @@ public class PBBulletController : MonoBehaviour
     private void Update()
     {
         //kills the bullet once it leaves the game area
-        if (transform.position.x > 65)
+        if (transform.position.x > 65
+            || transform.position.x < -130)
         {
             Destroy(gameObject);
         }

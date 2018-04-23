@@ -3,34 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AlienController : MonoBehaviour {
-    private Transform player;
+    //stats
+    private float nextFire;
+    public float fireRate; //set in editor
     private float speed;
     public static int Damage { get; set; }
-    public GameObject explosion;
-    public Transform shotSpawn;
-    private float nextFire; //time until next shot permitted
-    public float fireRate; //set in editor
-    public GameObject shot;
-    public GameObject partnerAlien;
-    public enum Type { TYPE1, TYPE2, TYPE3}; //alien types
-    public Type type;
     public int SequenceNumber; //set in editor
     public float health;
-    Rigidbody2D rb;
-    private bool chase;
+    //references
+    public GameObject explosion;
+    public GameObject shot;
+    public GameObject partnerAlien;
+    public Transform shotSpawn;
+    private Transform player;
     private AudioSource shootingSound;
     private SpriteRenderer rend;
+    Rigidbody2D rb;
+    //type of alien
+    public enum Type { TYPE1, TYPE2, TYPE3}; //alien types
+    public Type type;
+    //flags
+    private bool chase;
+
     void Start () {
         //adds alien to alive list when spawned
         GameController.AliveAliens.Add(gameObject);
+
         rb = GetComponent<Rigidbody2D>();
         rend = GetComponent<SpriteRenderer>();
-        chase = true;
+        shootingSound = GetComponent<AudioSource>();
+
         //sets type of alien
-        if(gameObject.CompareTag("Alien1"))
+        if (gameObject.CompareTag("Alien1"))
         {
+            chase = true; //alien begins in chase state
             type = Type.TYPE1;
-            //aliens have more damage and speed if hard mode is enabled
+
+            //aliens stats change if game is on hard compared to normal mode
+
             if(PlayerPrefs.GetInt("HardMode") == 0)
             {
                 Damage = 1;
@@ -88,25 +98,25 @@ public class AlienController : MonoBehaviour {
         {
         #pragma warning restore CS0168 
         }
-        shootingSound = GetComponent<AudioSource>();
     }
 
     void FixedUpdate()
-    { //moves enemy towards the player transform if ship is not already dead and in chase mode
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+    { //if alien type 1 and chase mode set
         if (player != null && type == Type.TYPE1 && chase && GameController.IsRunning)
         {
+            //move alien towards player position
             rb.velocity = new Vector3();
             rb.MovePosition(Vector3.MoveTowards(rb.position, player.position, Time.deltaTime * speed));
         }
         else if (type == Type.TYPE2)
         {
-            //reach the left of the screen
+            //if not in the game scene yet
             if (rb.position.x < -110f)
             {
+                //move to the right
                 rb.velocity = -Vector3.left * speed * Time.deltaTime;
             }
-            //once there, stop
+            //once in the scene view, stay static
             else
             {
                 rb.velocity = new Vector3();
@@ -118,7 +128,7 @@ public class AlienController : MonoBehaviour {
             //if they are the first of the pair
             if (SequenceNumber == 0)
             {
-                //move to the right
+                //move to the right if not at position
                 if (transform.position.x < -110)
                 {
                     transform.position = Vector3.MoveTowards(rb.position, new Vector3(-110f, 5f, 0f), Time.deltaTime * speed / 2);
@@ -126,7 +136,7 @@ public class AlienController : MonoBehaviour {
                 }
                 else
                 {
-                    //move upwards
+                    //move upwards if not at position
                     if (transform.position.y < 30f)
                     {
                         transform.position = Vector3.MoveTowards(rb.position, new Vector3(-110f, 30f, 0f), Time.deltaTime * speed / 2);
@@ -178,10 +188,10 @@ public class AlienController : MonoBehaviour {
 
     private void Update()
     {
-        //shoots when the game is running and the fire area is being touched
+        //if type 2 and the time till the next shot, set by the fire rate, has elapsed
         if (Time.time > nextFire && type == Type.TYPE2)
         {
-            //fires faster according to game level
+            //resets the time till next fire (shorter time with each game level)
             nextFire = Time.time + (fireRate - (0.35f * GameManagerS.Level));
             Shoot();
         }
@@ -197,13 +207,14 @@ public class AlienController : MonoBehaviour {
     }
 
     void Shoot()
-    { //makes shot
+    { //creates bullet object
         Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
         shootingSound.Play();
     }
     private IEnumerator OnTriggerEnter2D(Collider2D collision)
     {
         //if alien is hit by a bullet and isn't type 1
+        //type 1 aliens use different trigger colliders
         if (collision.CompareTag("Bullet") && type != Type.TYPE1)
         {
             //destroy bullet and make alien flash red
@@ -240,13 +251,16 @@ public class AlienController : MonoBehaviour {
         ParticleSystem parts = bang.GetComponent<ParticleSystem>();
         float totalDuration = parts.main.duration + parts.main.startLifetimeMultiplier;
         Destroy(bang, totalDuration);
+
         if(type == Type.TYPE2)
         {
             //spawn new enemy in its place
             Instantiate(gameObject, new Vector3(-125f, gameObject.transform.position.y, gameObject.transform.position.z), Quaternion.identity);
         }
-        GameController.numAliensToKill--; //decrements the number of aliens left to kill
-        GameManagerS.TotalAliensKilled++; //adds to the total number of aliens killed
+
+        GameController.numAliensToKill--; 
+        GameManagerS.TotalAliensKilled++;
+
         //gives more money to player if hard mode is enabled
         if (PlayerPrefs.GetInt("HardMode") == 0)
         {
@@ -256,10 +270,11 @@ public class AlienController : MonoBehaviour {
         {
             GameManagerS.Money += 15;
         }
+
         //kill alien and remove it from the list of alive ones
         GameController.AliveAliens.Remove(gameObject);
-        SoundController.GetSound(2).Play(); //plays death sound
         Destroy(gameObject);
+        SoundController.GetSound(2).Play(); //plays death sfx
     }
 
     public void flee(GameObject target)
@@ -267,11 +282,15 @@ public class AlienController : MonoBehaviour {
         //only flee if not chasing
         if (!chase)
         {
-            //calculate and set velocity to avoid gameobject
+            //calculate vector between the object and current position
             Vector2 desiredVelocity = (rb.transform.position - target.transform.position);
+            //get the direction of that vector
             desiredVelocity.Normalize();
+            //scale it to desired length of movement
             desiredVelocity *= 25f;
+            //get vector needed to apply that direction
             Vector2 direction = desiredVelocity - rb.velocity;
+            //apply it in the y-axis
             direction = new Vector2(0f, direction.y);
             rb.velocity = direction;
         }
@@ -304,6 +323,7 @@ public class AlienController : MonoBehaviour {
                 rend.material.color = Color.white;
 
                 health -= PlayerController.Damage;
+
                 if (health <= 0)
                 {
                     Dead();

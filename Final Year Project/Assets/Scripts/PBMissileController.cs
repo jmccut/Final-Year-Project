@@ -11,11 +11,12 @@ public class PBMissileController : MonoBehaviour
     public GameObject explosion;
     GameObject nearest;
     float min;
-    bool dropped;
+    bool dropped; //flag to indicate missile has fallen from ship
 
     void Start()
     {
         //saves position it spawned at so can see how far it travelled
+        //this is to judge if it has dropped
         spawnPos = transform.position;
 
         rb = GetComponent<Rigidbody2D>();
@@ -26,7 +27,6 @@ public class PBMissileController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //starts particle effect
         ps.Play();
         //if the nearest has not yet been found
         if (nearest == null)
@@ -64,11 +64,13 @@ public class PBMissileController : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        //once the missile has dropped out of the ship, shoot it left
+        //if the missile has not achieved a distance from spawn
         if (Mathf.Abs(rb.position.y - spawnPos.y) < 8 && !dropped)
         {
+            //keep moving it down
             rb.velocity = -Vector3.up * speed;
         }
+        //if it has dropped
         else
         {
             //the missile has fully dropped

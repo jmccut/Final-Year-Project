@@ -6,7 +6,7 @@ public class BGScroller : MonoBehaviour {
 
     //holds the amount the background moves (larger increments move faster)
     private float scroll;
-    public static float scrollSpeed; //0.0004 slow 0.00175 fast
+    public static float scrollSpeed; //40 = stationary
 
     void Update()
     {
@@ -21,12 +21,14 @@ public class BGScroller : MonoBehaviour {
         //if we are in a game
         else if(GameController.IsRunning)
         {
+            //scroll background by speed scaled by game level (since walls move faster, BG needs to keep up)
             scrollSpeed = 163f + (GameManagerS.Level - 1) * 50;
         }
 
         //changes the position of the background
         scroll += scrollSpeed / 100000;
         Vector2 offset = new Vector2(0, scroll);
+        //sets the necessary offset to create scrolling background effect
         Renderer renderer = GetComponent<Renderer>();
         renderer.material.SetTextureOffset("_MainTex", offset);
     }

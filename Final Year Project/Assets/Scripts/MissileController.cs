@@ -10,10 +10,11 @@ public class MissileController : MonoBehaviour {
     public GameObject explosion;
     GameObject nearest;
     float min;
-    bool dropped;
+    bool dropped; //flag to indicate if missile has fallen from the ship
 
     void Start () {
         //saves position it spawned at so can see how far it travelled
+        //this is so the dropped flag can be set
         spawnPos = transform.position;
 
         rb = GetComponent<Rigidbody2D>();
@@ -61,11 +62,13 @@ public class MissileController : MonoBehaviour {
     }
     private void FixedUpdate()
     {
-        //once the missile has dropped out of the ship, shoot it left
+        //if the missile hasn't dropped out of the ship yet
         if (Mathf.Abs(rb.position.y - spawnPos.y) < 8 && !dropped)
         {
+            //move it downwards
             rb.velocity = -Vector3.up * speed;
         }
+        //if it has reached certain distance from spawn
         else
         {
             //the missile has fully dropped

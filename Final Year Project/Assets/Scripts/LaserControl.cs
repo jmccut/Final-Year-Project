@@ -9,8 +9,10 @@ public class LaserControl : MonoBehaviour {
     private float min;
     private GameObject hitObject;
     public GameObject player;
+    //flag to differentiate which object this script belongs to
     private bool isPlayerBullet;
     private bool isAlienBullet;
+
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -34,6 +36,7 @@ public class LaserControl : MonoBehaviour {
             //find the alien closest to the player's forward transform vector
             min = 0;
             hitObject = null;
+            //parse all alive aliens
             foreach (GameObject i in InsideController.AliveInvaders)
             {
                 //if this is the first alien, set the min to the angle and set it as the target
@@ -66,7 +69,7 @@ public class LaserControl : MonoBehaviour {
                     }
                 }
             }
-            //otherwise if the alien is past the minimum then just shoot straight
+            //otherwise if the alien is past the minimum or they are all dead then just shoot straight
             else
             {
                 rb.velocity = transform.forward * speed;
@@ -83,24 +86,22 @@ public class LaserControl : MonoBehaviour {
                 //find the angle between the bullet and the player
                 min = Vector3.Angle(transform.forward, player.transform.position);
                 hitObject = player;
-                //if the angle is less than 15, move towards the player
+                //if the angle is less than 30, move towards the player
                 if (min < 30f)
                 {
+                    //move bullet object towards player position
                     transform.position = Vector3.MoveTowards(transform.position,
                         new Vector3(hitObject.transform.position.x, transform.position.y,
                         hitObject.transform.position.z), speed * Time.deltaTime);
                 }
+                //if the player is past the angle, shoot forwards
                 else
                 {
                     rb.velocity = transform.forward * speed;
                 }
             }
-            //else shoot the bullet straight
+            //else if the player is dead or the game is not in hard mode, shoot straight
             else
-            {
-                rb.velocity = transform.forward * speed;
-            }
-            if(InsideController.AliveInvaders.Count == 0)
             {
                 rb.velocity = transform.forward * speed;
             }

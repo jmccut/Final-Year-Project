@@ -4,20 +4,23 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SettingsController : MonoBehaviour {
-    private bool lastTouched; //holds the flag so the menu button either creates or destroys buttons
+    private bool menuInActive; 
     public Toggle hardMode;
     public Toggle muted;
-    private GameObject gc; //game controller reference
+    private GameObject gc;
 
     void Start () {
+        //gets reference to the game controller script
         gc = GameObject.FindGameObjectWithTag("GameController");
-        lastTouched = true;
+        
+        menuInActive = true;
+
         //do not show settings buttons on start
         foreach (Transform b in transform)
         {
             b.gameObject.SetActive(false);
         }
-        //sets toggles and preferences
+        //sets toggles tick boxes based on what the current preferences are
         if (PlayerPrefs.GetInt("HardMode") == 1)
         {
             hardMode.isOn = true;
@@ -44,27 +47,31 @@ public class SettingsController : MonoBehaviour {
 
     public void SpawnMenu()
     {
-        //if the button hasn't been touched before or last destroyed buttons-
-        //-then instantiate buttons
-        if (lastTouched)
+        //if the menu is currently inactive
+        if (menuInActive)
         {
+            //show menu
             foreach (Transform b in transform)
             {
                 b.gameObject.SetActive(true);
             }
-            lastTouched = false;
+            //menu is active
+            menuInActive = false;
         }
-        //otherwise the menu is currently up so destroy the buttons
+        //otherwise the menu is active so hide it
         else
         {
+            //set menu components to inactive
             foreach (Transform b in transform)
             {
                 b.gameObject.SetActive(false);
             }
-            lastTouched = true;
+            //menu is active
+            menuInActive = true;
         }
 
     }
+    //called when hard mode toggle is touched
     public void SetHardMode()
     {
         //if hard mode is currently off or has not been set, set it to true
@@ -78,6 +85,8 @@ public class SettingsController : MonoBehaviour {
             PlayerPrefs.SetInt("HardMode", 0);
         }
     }
+
+    //called when mute toggle is touched
     public void MuteGame()
     {
         //if the game was unmuted

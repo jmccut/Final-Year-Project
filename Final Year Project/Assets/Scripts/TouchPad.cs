@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+
 //SCRIPT USED FOR TOUCHPAD FROM THE UNITY STANDARD ASSETS
+
 public class TouchPad : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     public float smoothing;

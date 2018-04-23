@@ -1,14 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+//script is shared between alien and player bullet
 public class BulletController : MonoBehaviour {
     public float playerSpeed; //speed of the bullet for the player
-    public static float Speed { get; set; } //holds speed of the bullets
+    public static float Speed { get; set; } //holds speed of the bullets for alien
     Rigidbody2D rb;
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        //if player bullet
         if (gameObject.CompareTag("Bullet"))
         {
             //different speed for player bullets
@@ -23,6 +24,7 @@ public class BulletController : MonoBehaviour {
         {
             //slower speed
             Speed = 25;
+            //shot bullet right
             rb.velocity = -Vector3.left * Speed;
         }
 
@@ -31,7 +33,7 @@ public class BulletController : MonoBehaviour {
     private void Update()
     {
         //kills the bullet once it leaves the game area
-        if (transform.position.x < -130)
+        if (transform.position.x > 65 || transform.position.x < -130)
         {
             Destroy(gameObject);
         }

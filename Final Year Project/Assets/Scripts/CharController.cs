@@ -6,18 +6,21 @@ using UnityEngine.UI;
 
 public class CharController : MonoBehaviour
 {
-    AudioSource sfx;
-    Rigidbody rb;
+    //stats
     public float speed;
+    public float MaxHealth { get; set; }
+    public static int Damage { get; set; }
+    //references
     public Transform shotSpawn;
     public GameObject bullet;
     Animator anim;
-    public float MaxHealth { get; set; }
     public Slider healthBar;
     public Slider invulBar;
+    AudioSource sfx;
+    Rigidbody rb;
+    //flags
     public static bool Dead { get; set; }
     public static bool Invul { get; set; }
-    public static int Damage { get; set; }
     public static bool GotKey { get; set; }
 
     private void Awake()
@@ -25,6 +28,7 @@ public class CharController : MonoBehaviour
         //set references
         rb = GetComponent<Rigidbody>();
         sfx = GetComponent<AudioSource>();
+        anim = GetComponent<Animator>();
     }
     private void Start()
     {
@@ -33,18 +37,21 @@ public class CharController : MonoBehaviour
         //starts level as invulnerable
         invulBar.value = 1;
         StartCoroutine(StartInvul());
+
         Dead = false;
+        //player starts on max health each floor of the boss level
         MaxHealth = 100f;
         if (GameManagerS.Health <= 0)
         {
             GameManagerS.Health = MaxHealth;
         }
-        anim = GetComponent<Animator>();
+        //update health bar
         healthBar.value = GameManagerS.Health / MaxHealth;
     }
     void Update()
     {
         //if the player hits the fire button, fire bullet
+        //this button has the name "Jump" in the input manager
         if(CrossPlatformInputManager.GetButtonUp("Jump"))
         {
             Fire();
@@ -56,14 +63,18 @@ public class CharController : MonoBehaviour
         //gets input from joysticks to get direction of player
         float horizontal = CrossPlatformInputManager.GetAxis("Horizontal") * speed;
         float vertical = CrossPlatformInputManager.GetAxis("Vertical") * speed;
+        //creates vector from x and y values
         Vector3 direction = new Vector3(vertical, 0f, -horizontal);
         //changes velocity and look rotation according to the direction
         rb.velocity = direction;
+        //if the user is touching the joystick
         if (vertical != 0 || horizontal != 0)
         {   
+            //move character and rotate to look at direction
             transform.rotation = Quaternion.LookRotation(direction);
             anim.SetFloat("Walk", 0.3f);
         }
+        //remain static
         else
         {
             anim.SetFloat("Walk", 0f);
@@ -104,14 +115,15 @@ public class CharController : MonoBehaviour
         }
     }
 
+    //when collider is triggered
     private void OnTriggerEnter(Collider other)
     {
         //if the player is hit by an alien bullet
         if (other.gameObject.CompareTag("Alien Bullet"))
         {
+            //different damage for hard mode
             if (PlayerPrefs.GetInt("HardMode") == 0)
             {
-                //dec health and health bar, check if dead
                 DecrementHealth(10);
             }
             else
@@ -122,9 +134,11 @@ public class CharController : MonoBehaviour
         }
 
     }
+
+    //while colliding with something
     private void OnCollisionStay(Collision collision)
     {
-        //if the player touches the boss, lose health while touching
+        //if the player touches the boss, lose health while in contact
         if (collision.gameObject.CompareTag("Boss") && !Invul)
         {
             //player takes more damage when hard mode is enabled
@@ -139,6 +153,7 @@ public class CharController : MonoBehaviour
         }
     }
 
+    //method to make plaer invulnerable on start
     public IEnumerator StartInvul()
     {
         //player is invulnerable until invul bar is empty

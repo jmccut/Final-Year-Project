@@ -5,44 +5,46 @@ using UnityEngine.UI;
 
 
 public class GameController : MonoBehaviour {
-
-    public float wallHeightRange; //max height the wall can be
-    public GameObject wall; //reference to the bottom wall prefab
-    public GameObject TopWall; //reference to the top wall prefab
-    //references to alien prefabs
+    //statistics
+    public float maxWallHeight;
+    private float previousHeight;
+    private float wallSpawnSpeed; 
+    private float alienSpawnSpeed;
+    private float middleWallSpawnSpeed;
+    private int stage; 
+    public static int numAliensToKill;
+    public int numAliensMultiplier;
+    //object references
+    public GameObject wall; 
+    public GameObject TopWall; 
     public GameObject alien;
     public GameObject alien2;
     public GameObject alien3;
     public GameObject alien32;
-
     public GameObject destination;
     public GameObject destination2;
-    public GUIController GUI; //used to enable the GUI again after the level has ended
-    public Text levelText; //used to display the current level
-    public static int numAliensToKill;//holds the number of aliens to kill per level
-    public int numAliensMultiplier; //how much alien numbers increase over levels
-    public static bool stageCleared; //flag for when a number of stages are cleared
-    private int stage; //holds which stage the game is on
+    public GameObject tutorial;
+    public GameObject tutorialArrow;
     public GameObject player;
-    private float previousHeight; //holds the previous height of the walls
-    private float wallSpawnSpeed; //holds the speed to spawn the walls
-    private float alienSpawnSpeed;
-    private float middleWallSpawnSpeed;
     private GameObject wallCopy;
     private GameObject TopWallCopy;
+    //references to scripts
+    public GUIController GUI;
     public ChangeScene change;
+    //flags
+    public static bool IsRunning { get; set; }
+    public static bool stageCleared;
     //GUI text to update
     public Text moneyT;
     public Text partsT;
-
-    public GameObject tutorial;
-    public GameObject arrow;
+    public Text levelText;
     //list of alive aliens
     public static List<GameObject> AliveAliens { get; set; }
-    public static bool IsRunning { get; set; }
+
     private void Awake()
     {
         //initialises game manager state for new game
+        //does this on the first level and first stage (when player has started new game)
         if (GameManagerS.Level == 0 && GameManagerS.Stage == 0)
         {
             GameManagerS.LastTimeSaved = System.DateTime.Now;
@@ -64,21 +66,21 @@ public class GameController : MonoBehaviour {
             {
                 GameManagerS.CompleteObjList.Add(i, false);
             }
-            
+            //activates tutorial since it is new game
             tutorial.SetActive(true);
         }
         else
         {
-            //show bouncing arrow if on levels 1 or 2
+            //show bouncing arrow if on levels 1 or 2 for reinforcement
             if (GameManagerS.Stage == 1 && GameManagerS.Level == 2)
             {
                 tutorial.SetActive(true);
-                arrow.SetActive(true);
+                tutorialArrow.SetActive(true);
             }
             else
             {
                 tutorial.SetActive(false);
-                arrow.SetActive(false);
+                tutorialArrow.SetActive(false);
             }
         }
         //changes to boss level if the save file was on the boss
@@ -117,9 +119,9 @@ public class GameController : MonoBehaviour {
         moneyT.text = "£" + GameManagerS.Money;
         partsT.text = GameManagerS.Parts.ToString();
     }
-
+    //handles everything needed to level up
     void LevelUp()
-    { //handles everything needed to level up
+    { 
         EndGame();
         //turn missile mode off for the player if it was on
         if (GameManagerS.PowerUps[0])
@@ -196,7 +198,7 @@ public class GameController : MonoBehaviour {
 
     void makeMiddleWall()
     { //spawn a middle wall with a random y value and a random scale if the other walls aren't too high
-        Vector3 randVect = new Vector3(0f, Random.Range(0f, wallHeightRange), 0f);
+        Vector3 randVect = new Vector3(0f, Random.Range(0f, maxWallHeight), 0f);
         if (wallCopy.transform.localScale.y < 85f)
         {
             GameObject middleWall = Instantiate(wall, new Vector3(-125f, Random.Range(-26f, 26), wall.transform.position.z), Quaternion.identity);
@@ -215,20 +217,23 @@ public class GameController : MonoBehaviour {
         //if the previous height has not been stored yet, make the previous height a random size
         if (previousHeight == -100)
         {
-            previousHeight = Random.Range(13f, wallHeightRange);
+            previousHeight = Random.Range(13f, maxWallHeight);
             heightVect = new Vector3(0f, previousHeight, 0f);
             randDiff = 0;
         }
-        //otherwise, make a random height from the previous one differing by 10 at most
         else
         {
-            float test = previousHeight - 10;
-            if(test < 13)
+            float min = previousHeight - 10; //get min value from previous height
+            //if below 13, make it equal to 13 so it doesn't get too small
+            if(min < 13)
             {
-                test = 13;
+                min = 13;
             }
-            randDiff = Random.Range(test, previousHeight + 10);
+            //get random number between min and max
+            randDiff = Random.Range(min, previousHeight + 10);
+            //create vector with it
             heightVect = new Vector3(0f, randDiff, 0f);
+            //update previous height to this
             previousHeight = randDiff;
         }
 
@@ -251,9 +256,9 @@ public class GameController : MonoBehaviour {
     }
 
     public void StartGame()
-    { //set the game to running
+    { 
         IsRunning = true;
-        //start making walls
+        //start making walls at speed that is scaled by the game level
         InvokeRepeating("MakeWall", 0f, wallSpawnSpeed - (0.05f *GameManagerS.Level));
         InvokeRepeating("makeMiddleWall", 0f, middleWallSpawnSpeed - (0.5f * GameManagerS.Level));
         //instantiate different enemy types depending on the stage
@@ -269,7 +274,7 @@ public class GameController : MonoBehaviour {
         {
             InvokeRepeating("makeEnemy", 0f, (alienSpawnSpeed*2) - (1 * GameManagerS.Level));
         }
-        //increase alien bullet speed
+        //increase alien bullet speed scaled by the level
         BulletController.Speed *= GameManagerS.Level;   
         GUI.DisableCanvas();
     }
@@ -307,7 +312,7 @@ public class GameController : MonoBehaviour {
                 Destroy(g.gameObject);
             }
         }
-
+        //enable GUI
         StartCoroutine(GUI.EnableCanvas());
 
     }
@@ -320,7 +325,6 @@ public class GameController : MonoBehaviour {
         {
             Destroy(w.gameObject);
         }
-
         ResetAliensToKill();
         previousHeight = -100;
         player.GetComponent<Renderer>().enabled = true;

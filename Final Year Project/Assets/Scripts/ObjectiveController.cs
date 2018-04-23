@@ -13,9 +13,9 @@ public class ObjectiveController : MonoBehaviour {
     private int ObjectiveCount;
     public Text trophyCount;
     public GameObject player;
-    public Material reward;
+    public Material reward; //gold skin
     void Awake () {
-        //make list of obejectives
+        //initialises objective list with objectives
         ObjectiveList = new List<string>(new string[] {
             "Kill 25 aliens", "loot 25 weapon parts", "travel 225 million kilometres", 
             "Build a planet base", "Complete a level without getting hit",
@@ -31,9 +31,11 @@ public class ObjectiveController : MonoBehaviour {
     //when the screen is enabled
     private void OnEnable()
     {
+        //if not all the objectives are complete yet
         if (!GameManagerS.AllObjCompleted)
         {
-            //judges whether objectives have been completed or not
+            //this block of code evaluates game data to see if objectives have been completed
+
             if (GameManagerS.TotalAliensKilled > 24)
             {
                 GameManagerS.CompleteObjList[0] = true;
@@ -101,10 +103,11 @@ public class ObjectiveController : MonoBehaviour {
         //if completed all objectives
         if (ObjectiveCount == 15)
         {
+            //set flag and player's gold ship
             GameManagerS.AllObjCompleted=true;
             player.GetComponent<SpriteRenderer>().material = reward;
         }
-        //set the toggle labels
+
         SetToggleLabels();
         //update the trophy count
         trophyCount.text = "" + ObjectiveCount / 5 + "/3";
@@ -125,8 +128,10 @@ public class ObjectiveController : MonoBehaviour {
                 temp[i] = ObjectiveList[pair.Key];
                 i++;
             }
+            //if the objective has been complete
             else if (pair.Value)
             {
+                //add it to the list of complete objectives
                 compTogList[i].transform.GetChild(1).GetComponent<Text>().text = ObjectiveList[pair.Key];
             }
             

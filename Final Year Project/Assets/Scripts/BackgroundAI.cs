@@ -8,10 +8,12 @@ public class BackgroundAI : MonoBehaviour {
     public System.TimeSpan timeDiff; 
     private static BackgroundAI instance = null;
     float mins;
+
     private void Awake()
     {
         damage = 25; //damage ai does
         //used to execute awake method only once
+        //this is so it does not call the damage method each time the main scene is navigated to
         if (instance == null)
         {
             instance = this;
@@ -49,7 +51,7 @@ public class BackgroundAI : MonoBehaviour {
                     //if there is no base on it yet
                     if (GameManagerS.BaseLevels[i] == 0)
                     {
-                        //1 in 10 chance of taking damage
+                        //1 in 15 chance of taking damage
                         rand = Random.Range(0, 15);
                         if (rand == 0)
                         {
@@ -65,7 +67,9 @@ public class BackgroundAI : MonoBehaviour {
                         rand = Random.Range(0, 15 * GameManagerS.BaseLevels[i]);
                         if (rand == 0)
                         {
+                            //do damage to base
                             GameManagerS.BaseDamage[i] += damage;
+                            //if dead, reset its level
                             if(GameManagerS.BaseDamage[i] == 100)
                             {
                                 GameManagerS.BaseLevels[i] = 0;

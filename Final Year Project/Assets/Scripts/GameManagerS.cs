@@ -4,12 +4,11 @@ using UnityEngine;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System;
-/*
- * portions of this script have been taken from CE318 lecture notes
- */
+//class holding the player data to be saved
 [Serializable]
 class PlayerData
 {
+    //player stats
     public int Level;
     public int Stage;
     public bool OnBossLevel;
@@ -34,6 +33,7 @@ class PlayerData
 }
 public class GameManagerS : MonoBehaviour
 {
+    //static variables to be accessed throughout the running of the application
     public static int Level { get; set; }
     public static int Stage { get; set; }
     public static float Health { get; set; }
@@ -127,7 +127,7 @@ public class GameManagerS : MonoBehaviour
 
     public void Reset()
     {
-        //resets all player data ready for new game
+        //resets all player data to default values ready for new game
         Stage = 0;
         Level = 0;
         OnBossLevel = false;

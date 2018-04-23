@@ -5,19 +5,23 @@ using UnityEngine.SceneManagement;
 
 public class PBGameController : MonoBehaviour
 {
-    public static int numAliensToKill;//holds the number of aliens to kill per level
-    public static List<GameObject> AliveAliens { get; set; }
+    //stats
+    public static int numAliensToKill;
     private int numOfAlien1;
     private int numOfAlien2;
     private int numOfAlien3;
+    private int wave;
+    private int spawnRate;
+    //list of alive aliens
+    public static List<GameObject> AliveAliens { get; set; }
+    //references
     public ChangeScene change;
     public GameObject alien1;
     public GameObject alien2;
     public GameObject alien3;
-    private int level;
-    private int spawnRate;
+    //flags
     public static bool Paused {set;get;}
-    // Use this for initialization
+ 
     private void Awake()
     {
         numAliensToKill = 25;
@@ -31,19 +35,19 @@ public class PBGameController : MonoBehaviour
 
     private void SpawnEnemies()
     {   
-        //if the number of this type of alien to kill has been surpassed
-        if (level == 0)
+        //spawns appropriate aliens given wave
+        if (wave == 0)
         {
             spawnRate = 1;
             InvokeRepeating("MakeAlien2", 0, spawnRate);
         }
-        else if (level == 1)
+        else if (wave == 1)
         {
             spawnRate = 5;
             CancelInvoke();
             InvokeRepeating("MakeAlien1", 0, spawnRate);
         }
-        else if (level == 2)
+        else if (wave == 2)
         {
             spawnRate = 15;
             CancelInvoke();
@@ -53,14 +57,15 @@ public class PBGameController : MonoBehaviour
 
     private void Update()
     {
-        if(numAliensToKill == 11 && level == 0)
+        //set the different wave numbers when certain number of aliens killed for each type
+        if(numAliensToKill == 11 && wave == 0)
         {
-            level = 1;
+            wave = 1;
             SpawnEnemies();
         }
-        else if (numAliensToKill == 6 && level == 1)
+        else if (numAliensToKill == 6 && wave == 1)
         {
-            level = 2;
+            wave = 2;
             SpawnEnemies();
         }
         else if(numAliensToKill == 0)
@@ -78,8 +83,10 @@ public class PBGameController : MonoBehaviour
 
     public void EndGame()
     {
+        //reset the damage and levels of the planet which this level referred to
         GameManagerS.BaseDamage[GameManagerS.CurrentPlanet] = 0;
         GameManagerS.BaseLevels[GameManagerS.CurrentPlanet] = 0;
+        //set objective to complete
         GameManagerS.CompleteObjList[13] = true;
         //turns off upgrades if active
         if (GameManagerS.PowerUps[0])
@@ -90,6 +97,7 @@ public class PBGameController : MonoBehaviour
         {
             GameManagerS.PowerUps[1] = false;
         }
+        //change back to main
         change.Change(1);
         GameManagerS.OnBaseBossLevel = false;
     }
@@ -108,6 +116,8 @@ public class PBGameController : MonoBehaviour
             Time.timeScale = 1;
         }
     }
+
+    //methods to make relevant aliens
 
     public void MakeAlien1()
     {

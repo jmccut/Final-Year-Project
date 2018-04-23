@@ -4,12 +4,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class MoveZoneScript : MonoBehaviour, IPointerDownHandler, IPointerExitHandler {
-    public bool canMove;
+    public bool canMove; //flag to indicate area is being touched
+
+    //when touch starts
     public void OnPointerDown(PointerEventData eventData)
     {
         canMove = true;
     }
-
+    //when touch ends
     public void OnPointerExit(PointerEventData eventData)
     {
         canMove = false;

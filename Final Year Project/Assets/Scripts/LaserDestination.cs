@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+//script to control the movements of the laser destination objects
 public class LaserDestination : MonoBehaviour {
     private GameObject copy;
-    public Transform part;
+    //references to each alien in partner
+    public Transform part; 
     public Transform part2;
+
     public GameObject alien;
-    public bool go;
+    public bool go; //flag to indicate when objects can start moving
 
     private void Start()
     {
@@ -28,12 +30,12 @@ public class LaserDestination : MonoBehaviour {
     void Update () {
         if (alien != null)
         {
-            //if they have reached top of the screen, they can move
+            //when the aliens have reached the top of the screen, the laser begins rotation
             if (alien.transform.position.y > 29f || alien.transform.position.y < -29f)
             {
                 go = true;
             }
-            //move to the right
+            //begin moving to destination
             if (gameObject.CompareTag("LaserDestination") && go)
             {
                 transform.position = Vector3.MoveTowards(transform.position, part.position, 60f * Time.deltaTime);

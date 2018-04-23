@@ -5,35 +5,40 @@ using UnityEngine.UI;
 
 public class PBPlayerController : MonoBehaviour
 {
-    Rigidbody2D rb;
+    //player stats
     public float speed;
+    public float fireRate;
+    private float nextFire;
+    private float bulletCount;
+    private float maxBullets;
+    public static int Damage { get; set; }
+    private float invulCount;
+    public float Health;
+    public float MaxHealth;
+    //flags
+    public static bool Invul { get; set; }
+    private bool MissileMode;
+    public bool dead { get; set; }
+    //references
+    Rigidbody2D rb;
     public PBBoundary boundary;
     public GameObject shot;
     public Transform shotSpawn;
-    public float fireRate;
     public TouchPad touchPad;
     public FireZoneScript FZ;
-    private float nextFire;
     private AudioSource sfx;
     public Slider healthBar;
-    public float Health; //ship health
-    public float MaxHealth;
-    public GameObject zap; //damage particle effect
+    public GameObject zap; 
     public GameObject explosion;
-    public Button restart; //reference to the restart button
-    public static int Damage { get; set; }
-    private float bulletCount;
-    private float maxBullets;
+    public Button restart; 
     public Slider bulletBar;
-    public static bool Invul { get; set; }
     public Slider invulBar;
-    private float invulCount;
-    public bool dead { get; set; }
     public GameObject missile;
-    private bool MissileMode;
+
     private void Start()
     {
-        Damage = 25; //* GameManagerS.ShipWepLevel;
+        //set player stats
+        Damage = 25 * GameManagerS.ShipWepLevel;
         MaxHealth = 500;
         Health = MaxHealth;
         healthBar.value = 1;
@@ -42,9 +47,12 @@ public class PBPlayerController : MonoBehaviour
         bulletCount = maxBullets;
         bulletBar.value = 1;
         invulBar.value = 1;
+        //set references
         rb = GetComponent<Rigidbody2D>();
         sfx = GetComponent<AudioSource>();
+        //start regenerating bullets
         StartCoroutine(RegenBullets());
+        //set flags based on power-up states
         if (GameManagerS.PowerUps[0])
         {
             MissileMode = true;
@@ -52,29 +60,6 @@ public class PBPlayerController : MonoBehaviour
         else
         {
             MissileMode = false;
-        }
-        if (GameManagerS.PowerUps[1])
-        {
-            Invul = true;
-        }
-        else
-        {
-            Invul = false;
-        }
-    }
-
-    [System.Serializable]
-    public class PBBoundary
-    {
-        public float yMin, yMax;
-    }
-
-    void Update()
-    {
-        if (FZ.canFire && Time.time > nextFire && bulletCount!=0 && !dead && !PBGameController.Paused)
-        {
-            nextFire = Time.time + fireRate;
-            Shoot();
         }
         if (GameManagerS.PowerUps[1])
         {
@@ -88,6 +73,19 @@ public class PBPlayerController : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        //if the fire area is touched, the time before the next shot has elapsed, the player has bullet regenerated and the game isn't paused
+        if (FZ.canFire && Time.time > nextFire && bulletCount!=0 && !dead && !PBGameController.Paused)
+        {
+            //reset fire rate and shoot
+            nextFire = Time.time + fireRate;
+            Shoot();
+        }
+    }
+
+    //method being called every frame to regernate bullets
+    //same as in player controller
     IEnumerator RegenBullets()
     {
         while (true)
@@ -102,15 +100,15 @@ public class PBPlayerController : MonoBehaviour
         }
     }
 
-    //Get the 'calibrated' value from the Input
-
     void FixedUpdate()
     {
+        //get the direction of the touch as a vector
         Vector2 direction = touchPad.GetDirection();
-        
+        //take the y value of that direction
         Vector3 movement = new Vector3(0.0f, direction.y, 0.0f);
+        //change the velocity by that movement by speed
         rb.velocity = movement * speed;
-
+        //clamp position between y boundaries of the screen
         rb.position = new Vector3
         (
             -75f,
@@ -118,7 +116,7 @@ public class PBPlayerController : MonoBehaviour
             0.0f
         );
     }
-
+    //same as in player controller
     public void Shoot()
     {
         //make normal bullet if not in missle mode
@@ -138,15 +136,18 @@ public class PBPlayerController : MonoBehaviour
     }
 
     public void DecrementHealth(int damage)
-    { //decrease health by amount specified if not dead
+    {
         if (!dead)
         {
             if (Invul)
             {
+                //defer damage to shield
                 invulCount -= damage;
                 invulBar.value = invulCount / 400;
+                //destroy shield if health below or equal to 0
                 if (invulCount <= 0)
                 {
+                    //turn off flags and destroy object
                     Invul = false;
                     invulBar.gameObject.SetActive(false);
                     GameManagerS.PowerUps[1] = false;
@@ -155,6 +156,7 @@ public class PBPlayerController : MonoBehaviour
                     invulCount = 400;
                 }
             }
+            //dec health and update health bar
             else
             {
                 Health -= damage;
@@ -162,10 +164,14 @@ public class PBPlayerController : MonoBehaviour
             }
         }
     }
+    //called once collider is triggered
+    //similar to player controller
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        //if the player hits an alien bullet
         if (collision.gameObject.CompareTag("Alien Bullet"))
         {
+            //dec health and destroy bullet
             DecrementHealth(PBAlienController.alien1Dam);
             Destroy(collision.gameObject);
             //make zap particle effect and attach it to ship
@@ -175,6 +181,7 @@ public class PBPlayerController : MonoBehaviour
             part.transform.localScale = new Vector3(10, 10, 10);
             StartCoroutine(wait(part, 0.5f));
         }
+        //if alien hits a laser
         else if (collision.gameObject.CompareTag("Laser"))
         {
             DecrementHealth(PBAlienController.alien3Dam);
@@ -211,10 +218,16 @@ public class PBPlayerController : MonoBehaviour
         healthBar.value = 1;
         SoundController.GetSound(4).Play();
     }
-
+    //destroys particle effect
     IEnumerator wait(GameObject zap, float secs)
     {
         yield return new WaitForSeconds(secs);
         Destroy(zap.gameObject);
     }
+}
+//class sets boundaries of y-axis for player movement
+[System.Serializable]
+public class PBBoundary
+{
+    public float yMin, yMax;
 }
